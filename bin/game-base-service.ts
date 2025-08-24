@@ -2,7 +2,15 @@
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { GameBaseServiceStack } from '../lib/game-base-service-stack';
-import { getEnvironmentConfig } from '@loupeen/shared-config-library';
+// Temporary mock for shared-config-library
+const getEnvironmentConfig = (env: string) => {
+  const configs = {
+    test: { account: '728427470046', region: 'eu-north-1' },
+    qa: { account: '077029784291', region: 'us-east-1' },
+    production: { account: 'TBD', region: 'us-east-1' }
+  };
+  return configs[env as keyof typeof configs] || configs.test;
+};
 
 const app = new cdk.App();
 

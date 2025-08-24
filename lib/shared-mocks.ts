@@ -5,6 +5,7 @@
 
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as cdk from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 
 // Mock StructuredLogger
 export class StructuredLogger {
@@ -54,7 +55,7 @@ export const withErrorHandling = async <T>(
   try {
     return await handler();
   } catch (error) {
-    logger?.error('Error in handler', { error: error.message });
+    logger?.error('Error in handler', { error: (error as Error).message });
     
     if (error instanceof GameEngineError) {
       throw error;
@@ -62,7 +63,7 @@ export const withErrorHandling = async <T>(
     
     // Convert unknown errors to GameEngineError
     throw new GameEngineError(
-      error.message || 'Internal server error',
+      (error as Error).message || 'Internal server error',
       'INTERNAL_ERROR',
       { originalError: error }
     );
@@ -82,7 +83,7 @@ export const validateRequest = async <T>(
     const parsed = JSON.parse(body);
     return schema.parse(parsed) as T;
   } catch (error) {
-    throw new GameEngineError('Invalid request format', 'VALIDATION_ERROR', { error: error.message });
+    throw new GameEngineError('Invalid request format', 'VALIDATION_ERROR', { error: (error as Error).message });
   }
 };
 
@@ -133,10 +134,10 @@ export const createConfigFromEnvironment = (environment?: string): GameBaseServi
 };
 
 // Mock CDK constructs
-export class MockLoggingConstruct extends cdk.Construct {
+export class MockLoggingConstruct extends Construct {
   public readonly logGroup: logs.LogGroup;
 
-  constructor(scope: cdk.Construct, id: string) {
+  constructor(scope: Construct, id: string) {
     super(scope, id);
     
     this.logGroup = new logs.LogGroup(this, 'LogGroup', {

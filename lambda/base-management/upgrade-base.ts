@@ -6,7 +6,7 @@ import {
   GameEngineError,
   withErrorHandling,
   validateRequest 
-} from '@loupeen/shared-js-utils';
+} from '../../lib/shared-mocks';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -71,7 +71,7 @@ export const handler = async (
       requestId: event.requestContext?.requestId 
     });
 
-    const request = await validateRequest(UpgradeBaseRequestSchema, event.body);
+    const request = await validateRequest<UpgradeBaseRequest>(UpgradeBaseRequestSchema, event.body);
     
     // Get current base state
     const currentBase = await getPlayerBase(request.playerId, request.baseId);
@@ -147,7 +147,7 @@ async function getPlayerBase(playerId: string, baseId: string): Promise<any> {
     throw new GameEngineError(
       'Failed to retrieve base',
       'BASE_RETRIEVAL_ERROR',
-      { playerId, baseId, error: error.message }
+      { playerId, baseId, error: (error as Error).message }
     );
   }
 }
@@ -183,7 +183,7 @@ async function validateUpgradeRequirements(base: any, upgradeType: string): Prom
     throw new GameEngineError(
       'Failed to validate upgrade requirements',
       'UPGRADE_VALIDATION_ERROR',
-      { baseId: base.baseId, upgradeType, error: error.message }
+      { baseId: base.baseId, upgradeType, error: (error as Error).message }
     );
   }
 }
@@ -213,7 +213,7 @@ async function checkActiveUpgrades(playerId: string, baseId: string): Promise<vo
     throw new GameEngineError(
       'Failed to check active upgrades',
       'ACTIVE_UPGRADE_CHECK_ERROR',
-      { playerId, baseId, error: error.message }
+      { playerId, baseId, error: (error as Error).message }
     );
   }
 }
@@ -260,7 +260,7 @@ async function createUpgradeRecord(
       { 
         playerId: request.playerId, 
         baseId: request.baseId, 
-        error: error.message 
+        error: (error as Error).message 
       }
     );
   }
@@ -319,7 +319,7 @@ async function completeInstantUpgrade(upgrade: BaseUpgrade, base: any): Promise<
     throw new GameEngineError(
       'Failed to complete instant upgrade',
       'INSTANT_UPGRADE_ERROR',
-      { upgradeId: upgrade.upgradeId, error: error.message }
+      { upgradeId: upgrade.upgradeId, error: (error as Error).message }
     );
   }
 }

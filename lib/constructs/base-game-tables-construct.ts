@@ -48,7 +48,7 @@ export class BaseGameTablesConstruct extends Construct {
   }
 
   private createPlayerBasesTable(environment: string, config: GameBaseServiceConfig): dynamodb.Table {
-    return new dynamodb.Table(this, 'PlayerBasesTable', {
+    const table = new dynamodb.Table(this, 'PlayerBasesTable', {
       tableName: `game-base-player-bases-${environment}`,
       partitionKey: {
         name: 'playerId',
@@ -66,52 +66,54 @@ export class BaseGameTablesConstruct extends Construct {
       deletionProtection: config.dynamodb.deletionProtection,
       removalPolicy: environment === 'production' 
         ? cdk.RemovalPolicy.RETAIN 
-        : cdk.RemovalPolicy.DESTROY,
-
-      // Global Secondary Indexes for efficient querying
-      globalSecondaryIndexes: [
-        {
-          indexName: 'LocationIndex',
-          partitionKey: {
-            name: 'mapSectionId',
-            type: dynamodb.AttributeType.STRING
-          },
-          sortKey: {
-            name: 'coordinateHash',
-            type: dynamodb.AttributeType.STRING
-          },
-          projectionType: dynamodb.ProjectionType.ALL
-        },
-        {
-          indexName: 'AllianceIndex',
-          partitionKey: {
-            name: 'allianceId',
-            type: dynamodb.AttributeType.STRING
-          },
-          sortKey: {
-            name: 'createdAt',
-            type: dynamodb.AttributeType.NUMBER
-          },
-          projectionType: dynamodb.ProjectionType.ALL
-        },
-        {
-          indexName: 'StatusIndex',
-          partitionKey: {
-            name: 'status',
-            type: dynamodb.AttributeType.STRING
-          },
-          sortKey: {
-            name: 'lastActiveAt',
-            type: dynamodb.AttributeType.NUMBER
-          },
-          projectionType: dynamodb.ProjectionType.KEYS_ONLY
-        }
-      ]
+        : cdk.RemovalPolicy.DESTROY
     });
+
+    // Add Global Secondary Indexes
+    table.addGlobalSecondaryIndex({
+      indexName: 'LocationIndex',
+      partitionKey: {
+        name: 'mapSectionId',
+        type: dynamodb.AttributeType.STRING
+      },
+      sortKey: {
+        name: 'coordinateHash',
+        type: dynamodb.AttributeType.STRING
+      },
+      projectionType: dynamodb.ProjectionType.ALL
+    });
+
+    table.addGlobalSecondaryIndex({
+      indexName: 'AllianceIndex',
+      partitionKey: {
+        name: 'allianceId',
+        type: dynamodb.AttributeType.STRING
+      },
+      sortKey: {
+        name: 'createdAt',
+        type: dynamodb.AttributeType.NUMBER
+      },
+      projectionType: dynamodb.ProjectionType.ALL
+    });
+
+    table.addGlobalSecondaryIndex({
+      indexName: 'StatusIndex',
+      partitionKey: {
+        name: 'status',
+        type: dynamodb.AttributeType.STRING
+      },
+      sortKey: {
+        name: 'lastActiveAt',
+        type: dynamodb.AttributeType.NUMBER
+      },
+      projectionType: dynamodb.ProjectionType.KEYS_ONLY
+    });
+
+    return table;
   }
 
   private createBaseTemplatesTable(environment: string, config: GameBaseServiceConfig): dynamodb.Table {
-    return new dynamodb.Table(this, 'BaseTemplatesTable', {
+    const table = new dynamodb.Table(this, 'BaseTemplatesTable', {
       tableName: `game-base-templates-${environment}`,
       partitionKey: {
         name: 'templateId',
@@ -125,28 +127,28 @@ export class BaseGameTablesConstruct extends Construct {
       deletionProtection: config.dynamodb.deletionProtection,
       removalPolicy: environment === 'production' 
         ? cdk.RemovalPolicy.RETAIN 
-        : cdk.RemovalPolicy.DESTROY,
-
-      // GSI for querying by base type and level
-      globalSecondaryIndexes: [
-        {
-          indexName: 'TypeLevelIndex',
-          partitionKey: {
-            name: 'baseType',
-            type: dynamodb.AttributeType.STRING
-          },
-          sortKey: {
-            name: 'level',
-            type: dynamodb.AttributeType.NUMBER
-          },
-          projectionType: dynamodb.ProjectionType.ALL
-        }
-      ]
+        : cdk.RemovalPolicy.DESTROY
     });
+
+    // Add GSI for querying by base type and level
+    table.addGlobalSecondaryIndex({
+      indexName: 'TypeLevelIndex',
+      partitionKey: {
+        name: 'baseType',
+        type: dynamodb.AttributeType.STRING
+      },
+      sortKey: {
+        name: 'level',
+        type: dynamodb.AttributeType.NUMBER
+      },
+      projectionType: dynamodb.ProjectionType.ALL
+    });
+
+    return table;
   }
 
   private createSpawnLocationsTable(environment: string, config: GameBaseServiceConfig): dynamodb.Table {
-    return new dynamodb.Table(this, 'SpawnLocationsTable', {
+    const table = new dynamodb.Table(this, 'SpawnLocationsTable', {
       tableName: `game-base-spawn-locations-${environment}`,
       partitionKey: {
         name: 'spawnRegionId',
@@ -167,28 +169,28 @@ export class BaseGameTablesConstruct extends Construct {
         : cdk.RemovalPolicy.DESTROY,
 
       // TTL for temporary spawn reservations
-      timeToLiveAttribute: 'ttl',
-
-      // GSI for querying available spawn locations
-      globalSecondaryIndexes: [
-        {
-          indexName: 'AvailabilityIndex',
-          partitionKey: {
-            name: 'isAvailable',
-            type: dynamodb.AttributeType.STRING
-          },
-          sortKey: {
-            name: 'lastUsedAt',
-            type: dynamodb.AttributeType.NUMBER
-          },
-          projectionType: dynamodb.ProjectionType.ALL
-        }
-      ]
+      timeToLiveAttribute: 'ttl'
     });
+
+    // Add GSI for querying available spawn locations
+    table.addGlobalSecondaryIndex({
+      indexName: 'AvailabilityIndex',
+      partitionKey: {
+        name: 'isAvailable',
+        type: dynamodb.AttributeType.STRING
+      },
+      sortKey: {
+        name: 'lastUsedAt',
+        type: dynamodb.AttributeType.NUMBER
+      },
+      projectionType: dynamodb.ProjectionType.ALL
+    });
+
+    return table;
   }
 
   private createBaseUpgradesTable(environment: string, config: GameBaseServiceConfig): dynamodb.Table {
-    return new dynamodb.Table(this, 'BaseUpgradesTable', {
+    const table = new dynamodb.Table(this, 'BaseUpgradesTable', {
       tableName: `game-base-upgrades-${environment}`,
       partitionKey: {
         name: 'playerId',
@@ -209,35 +211,36 @@ export class BaseGameTablesConstruct extends Construct {
         : cdk.RemovalPolicy.DESTROY,
 
       // TTL for completed upgrades cleanup
-      timeToLiveAttribute: 'ttl',
-
-      // GSI for querying active upgrades
-      globalSecondaryIndexes: [
-        {
-          indexName: 'StatusIndex',
-          partitionKey: {
-            name: 'status',
-            type: dynamodb.AttributeType.STRING
-          },
-          sortKey: {
-            name: 'completionTime',
-            type: dynamodb.AttributeType.NUMBER
-          },
-          projectionType: dynamodb.ProjectionType.ALL
-        },
-        {
-          indexName: 'BaseIndex',
-          partitionKey: {
-            name: 'baseId',
-            type: dynamodb.AttributeType.STRING
-          },
-          sortKey: {
-            name: 'startedAt',
-            type: dynamodb.AttributeType.NUMBER
-          },
-          projectionType: dynamodb.ProjectionType.ALL
-        }
-      ]
+      timeToLiveAttribute: 'ttl'
     });
+
+    // Add GSI for querying active upgrades
+    table.addGlobalSecondaryIndex({
+      indexName: 'StatusIndex',
+      partitionKey: {
+        name: 'status',
+        type: dynamodb.AttributeType.STRING
+      },
+      sortKey: {
+        name: 'completionTime',
+        type: dynamodb.AttributeType.NUMBER
+      },
+      projectionType: dynamodb.ProjectionType.ALL
+    });
+
+    table.addGlobalSecondaryIndex({
+      indexName: 'BaseIndex',
+      partitionKey: {
+        name: 'baseId',
+        type: dynamodb.AttributeType.STRING
+      },
+      sortKey: {
+        name: 'startedAt',
+        type: dynamodb.AttributeType.NUMBER
+      },
+      projectionType: dynamodb.ProjectionType.ALL
+    });
+
+    return table;
   }
 }

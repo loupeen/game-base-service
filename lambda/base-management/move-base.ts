@@ -6,7 +6,7 @@ import {
   GameEngineError,
   withErrorHandling,
   validateRequest 
-} from '@loupeen/shared-js-utils';
+} from '../../lib/shared-mocks';
 import { z } from 'zod';
 
 const dynamoClient = new DynamoDBClient({});
@@ -54,7 +54,7 @@ export const handler = async (
       requestId: event.requestContext?.requestId 
     });
 
-    const request = await validateRequest(MoveBaseRequestSchema, event.body);
+    const request = await validateRequest<MoveBaseRequest>(MoveBaseRequestSchema, event.body);
     
     // Get current base state
     const currentBase = await getPlayerBase(request.playerId, request.baseId);
@@ -132,7 +132,7 @@ async function getPlayerBase(playerId: string, baseId: string): Promise<any> {
     throw new GameEngineError(
       'Failed to retrieve base',
       'BASE_RETRIEVAL_ERROR',
-      { playerId, baseId, error: error.message }
+      { playerId, baseId, error: (error as Error).message }
     );
   }
 }
@@ -187,7 +187,7 @@ async function validateMovement(
     throw new GameEngineError(
       'Movement validation failed',
       'MOVEMENT_VALIDATION_ERROR',
-      { baseId: base.baseId, error: error.message }
+      { baseId: base.baseId, error: (error as Error).message }
     );
   }
 }
@@ -206,15 +206,13 @@ async function validateDestination(
       KeyConditionExpression: 'mapSectionId = :sectionId AND coordinateHash = :coordHash',
       ExpressionAttributeValues: {
         ':sectionId': `${Math.floor(coordinates.x / 100)},${Math.floor(coordinates.y / 100)}`,
-        ':coordHash': coordinateHash
+        ':coordHash': coordinateHash,
+        ':excludeBaseId': excludeBaseId,
+        ':destroyed': 'destroyed'
       },
       FilterExpression: 'baseId <> :excludeBaseId AND #status <> :destroyed',
       ExpressionAttributeNames: {
         '#status': 'status'
-      },
-      ExpressionAttributeValues: {
-        ':excludeBaseId': excludeBaseId,
-        ':destroyed': 'destroyed'
       }
     });
 
@@ -235,7 +233,7 @@ async function validateDestination(
     throw new GameEngineError(
       'Destination validation failed',
       'DESTINATION_VALIDATION_ERROR',
-      { coordinates, error: error.message }
+      { coordinates, error: (error as Error).message }
     );
   }
 }
@@ -291,7 +289,7 @@ async function executeBaseMovement(
       ? 'SET coordinates = :newCoords, mapSectionId = :newSection, coordinateHash = :newHash, lastMovedAt = :now, lastActiveAt = :now'
       : 'SET coordinates = :newCoords, mapSectionId = :newSection, coordinateHash = :newHash, #status = :moving, lastMovedAt = :now, lastActiveAt = :now, arrivalTime = :arrivalTime';
     
-    const expressionAttributeNames = request.useTeleport ? {} : { '#status': 'status' };
+    const expressionAttributeNames: Record<string, string> = request.useTeleport ? {} : { '#status': 'status' };
     const expressionAttributeValues: Record<string, any> = {
       ':newCoords': request.newCoordinates,
       ':newSection': newMapSectionId,
@@ -336,7 +334,7 @@ async function executeBaseMovement(
       { 
         playerId: request.playerId, 
         baseId: request.baseId,
-        error: error.message 
+        error: (error as Error).message 
       }
     );
   }

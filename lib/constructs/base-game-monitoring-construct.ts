@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as cloudwatchActions from 'aws-cdk-lib/aws-cloudwatch-actions';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as sns from 'aws-cdk-lib/aws-sns';
@@ -295,7 +296,7 @@ export class BaseGameMonitoringConstruct extends Construct {
         threshold: config.monitoring.alarmThresholds.errorRate,
         evaluationPeriods: 2,
         treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING
-      }).addAlarmAction(new cloudwatch.SnsAction(this.alertTopic));
+      }).addAlarmAction(new cloudwatchActions.SnsAction(this.alertTopic));
 
       // Duration alarm
       new cloudwatch.Alarm(this, `LambdaDurationAlarm${index}`, {
@@ -313,7 +314,7 @@ export class BaseGameMonitoringConstruct extends Construct {
         threshold: config.monitoring.alarmThresholds.latencyMs,
         evaluationPeriods: 3,
         treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING
-      }).addAlarmAction(new cloudwatch.SnsAction(this.alertTopic));
+      }).addAlarmAction(new cloudwatchActions.SnsAction(this.alertTopic));
     });
   }
 
@@ -333,7 +334,7 @@ export class BaseGameMonitoringConstruct extends Construct {
       }),
       threshold: 5, // 5 errors in 5 minutes
       evaluationPeriods: 2
-    }).addAlarmAction(new cloudwatch.SnsAction(this.alertTopic));
+    }).addAlarmAction(new cloudwatchActions.SnsAction(this.alertTopic));
 
     // High latency alarm
     new cloudwatch.Alarm(this, 'ApiGatewayLatencyAlarm', {
@@ -350,7 +351,7 @@ export class BaseGameMonitoringConstruct extends Construct {
       }),
       threshold: config.monitoring.alarmThresholds.latencyMs,
       evaluationPeriods: 3
-    }).addAlarmAction(new cloudwatch.SnsAction(this.alertTopic));
+    }).addAlarmAction(new cloudwatchActions.SnsAction(this.alertTopic));
   }
 
   private createBusinessMetricAlarms(config: GameBaseServiceConfig): void {
@@ -368,7 +369,7 @@ export class BaseGameMonitoringConstruct extends Construct {
       evaluationPeriods: 2,
       comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD,
       treatMissingData: cloudwatch.TreatMissingData.BREACHING
-    }).addAlarmAction(new cloudwatch.SnsAction(this.alertTopic));
+    }).addAlarmAction(new cloudwatchActions.SnsAction(this.alertTopic));
   }
 
   private createCostMonitoring(environment: string, config: GameBaseServiceConfig): void {

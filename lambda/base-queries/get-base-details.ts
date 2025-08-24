@@ -5,7 +5,7 @@ import {
   StructuredLogger, 
   GameEngineError,
   withErrorHandling 
-} from '@loupeen/shared-js-utils';
+} from '../../lib/shared-mocks';
 
 const dynamoClient = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
@@ -168,7 +168,7 @@ async function getBaseDetails(playerId: string, baseId: string): Promise<any> {
     throw new GameEngineError(
       'Failed to retrieve base details',
       'BASE_RETRIEVAL_ERROR',
-      { playerId, baseId, error: error.message }
+      { playerId, baseId, error: (error as Error).message }
     );
   }
 }
@@ -209,7 +209,7 @@ async function getActiveUpgrades(playerId: string, baseId: string): Promise<any[
     logger.warn('Failed to retrieve active upgrades', { 
       playerId, 
       baseId, 
-      error: error.message 
+      error: (error as Error).message 
     });
     return [];
   }

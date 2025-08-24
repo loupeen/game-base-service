@@ -3,11 +3,11 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, PutCommand, QueryCommand, GetCommand } from '@aws-sdk/lib-dynamodb';
 import { 
   StructuredLogger, 
-  BaseError,
   GameEngineError,
   withErrorHandling,
-  validateRequest 
-} from '@loupeen/shared-js-utils';
+  validateRequest,
+  publishCustomMetric 
+} from '../../lib/shared-mocks';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -105,7 +105,7 @@ export const handler = async (
     });
 
     // Validate request using shared validation patterns
-    const request = await validateRequest(CreateBaseRequestSchema, event.body);
+    const request = await validateRequest<CreateBaseRequest>(CreateBaseRequestSchema, event.body);
     
     // Check if player can create more bases (subscription limits)
     await validatePlayerBaseLimit(request.playerId);
@@ -184,7 +184,7 @@ async function validatePlayerBaseLimit(playerId: string): Promise<void> {
     throw new GameEngineError(
       'Failed to validate player base limit',
       'VALIDATION_ERROR',
-      { playerId, error: error.message }
+      { playerId, error: (error as Error).message }
     );
   }
 }
@@ -219,7 +219,7 @@ async function getBaseTemplate(baseType: string): Promise<BaseTemplate> {
     throw new GameEngineError(
       'Failed to retrieve base template',
       'TEMPLATE_RETRIEVAL_ERROR',
-      { baseType, error: error.message }
+      { baseType, error: (error as Error).message }
     );
   }
 }
@@ -241,7 +241,7 @@ async function calculateSpawnCoordinates(spawnLocationId?: string): Promise<{ x:
 
       const response = await docClient.send(command);
       
-      if (!response.Item || !response.Item.isAvailable) {
+      if (!response.Item?.isAvailable) {
         throw new GameEngineError(
           'Spawn location not available',
           'SPAWN_LOCATION_UNAVAILABLE',
@@ -272,7 +272,7 @@ async function calculateSpawnCoordinates(spawnLocationId?: string): Promise<{ x:
     throw new GameEngineError(
       'Failed to calculate spawn coordinates',
       'SPAWN_CALCULATION_ERROR',
-      { spawnLocationId, error: error.message }
+      { spawnLocationId, error: (error as Error).message }
     );
   }
 }
@@ -331,7 +331,7 @@ async function createPlayerBase(
       { 
         playerId: request.playerId, 
         baseType: request.baseType,
-        error: error.message 
+        error: (error as Error).message 
       }
     );
   }

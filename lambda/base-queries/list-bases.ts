@@ -6,7 +6,7 @@ import {
   GameEngineError,
   withErrorHandling,
   validateRequest 
-} from '@loupeen/shared-js-utils';
+} from '../../lib/shared-mocks';
 import { z } from 'zod';
 
 const dynamoClient = new DynamoDBClient({});
@@ -108,7 +108,7 @@ async function getPlayerBases(request: ListBasesRequest): Promise<{
   lastEvaluatedKey?: string;
 }> {
   try {
-    let keyConditionExpression = 'playerId = :playerId';
+    const keyConditionExpression = 'playerId = :playerId';
     let filterExpression: string | undefined;
     
     const expressionAttributeValues: Record<string, any> = {
@@ -184,7 +184,7 @@ async function getPlayerBases(request: ListBasesRequest): Promise<{
     throw new GameEngineError(
       'Failed to retrieve player bases',
       'BASE_QUERY_ERROR',
-      { playerId: request.playerId, error: error.message }
+      { playerId: request.playerId, error: (error as Error).message }
     );
   }
 }
@@ -242,7 +242,7 @@ async function calculateBaseSummary(playerId: string): Promise<any> {
     // Return basic summary if detailed calculation fails
     logger.warn('Failed to calculate detailed base summary', { 
       playerId, 
-      error: error.message 
+      error: (error as Error).message 
     });
     
     return {

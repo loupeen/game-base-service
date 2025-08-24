@@ -6,7 +6,7 @@ import {
   GameEngineError,
   withErrorHandling,
   validateRequest 
-} from '@loupeen/shared-js-utils';
+} from '../../lib/shared-mocks';
 import { z } from 'zod';
 
 const dynamoClient = new DynamoDBClient({});
@@ -60,7 +60,7 @@ export const handler = async (
       requestId: event.requestContext?.requestId 
     });
 
-    const request = await validateRequest(CalculateSpawnLocationRequestSchema, event.body);
+    const request = await validateRequest<CalculateSpawnLocationRequest>(CalculateSpawnLocationRequestSchema, event.body);
     
     // Calculate optimal spawn location
     const spawnLocation = await calculateOptimalSpawnLocation(request);
@@ -124,7 +124,7 @@ async function calculateOptimalSpawnLocation(
     throw new GameEngineError(
       'Failed to calculate spawn location',
       'SPAWN_CALCULATION_ERROR',
-      { playerId: request.playerId, error: error.message }
+      { playerId: request.playerId, error: (error as Error).message }
     );
   }
 }
@@ -158,7 +158,7 @@ async function getFriendLocations(friendIds: string[]): Promise<{ x: number; y: 
     return locations;
 
   } catch (error) {
-    logger.warn('Failed to get friend locations', { friendIds, error: error.message });
+    logger.warn('Failed to get friend locations', { friendIds, error: (error as Error).message });
     return [];
   }
 }
@@ -191,7 +191,7 @@ async function analyzePopulationDensity(): Promise<Map<string, number>> {
     return densityMap;
 
   } catch (error) {
-    logger.warn('Failed to analyze population density', { error: error.message });
+    logger.warn('Failed to analyze population density', { error: (error as Error).message });
     return new Map();
   }
 }
@@ -397,7 +397,7 @@ async function reserveSpawnLocation(spawnLocationId: string, playerId: string): 
     logger.warn('Failed to reserve spawn location', { 
       spawnLocationId, 
       playerId, 
-      error: error.message 
+      error: (error as Error).message 
     });
     // Non-critical error - spawn can still be used
   }
