@@ -1,0 +1,86 @@
+{
+  "name": "game-base-service",
+  "version": "1.0.0",
+  "description": "Loupeen RTS Platform - Base Building and Management Service",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest --selectProjects unit",
+    "test:unit": "jest --selectProjects unit",
+    "test:integration": "TEST_ENV=integration jest --selectProjects integration --runInBand",
+    "test:watch": "jest --watch --selectProjects unit",
+    "test:coverage": "jest --coverage --selectProjects unit",
+    "test:smoke": "npm run test:integration -- --testPathPattern=smoke",
+    "test:qa": "TEST_ENV=qa npm run test:integration",
+    "test:all": "npm run test:unit && npm run test:integration",
+    "lint": "eslint . --ext .ts,.js",
+    "lint:fix": "eslint . --ext .ts,.js --fix",
+    "typecheck": "tsc --noEmit",
+    "quality": "npm run lint && npm run typecheck && npm run test:coverage",
+    "synth": "cdk synth",
+    "synth:test": "cdk synth --context environment=test",
+    "synth:qa": "cdk synth --context environment=qa",
+    "deploy:test": "cdk deploy GameBaseService-test --context environment=test --require-approval never",
+    "deploy:qa": "cdk deploy GameBaseService-qa --context environment=qa --require-approval never",
+    "deploy:production": "cdk deploy GameBaseService-production --context environment=production --require-approval never",
+    "diff": "cdk diff",
+    "diff:test": "cdk diff GameBaseService-test --context environment=test",
+    "diff:qa": "cdk diff GameBaseService-qa --context environment=qa",
+    "bootstrap": "cdk bootstrap",
+    "bootstrap:test": "cdk bootstrap aws://728427470046/eu-north-1",
+    "bootstrap:qa": "cdk bootstrap aws://077029784291/us-east-1",
+    "destroy:test": "cdk destroy GameBaseService-test --context environment=test --force",
+    "destroy:qa": "cdk destroy GameBaseService-qa --context environment=qa --force",
+    "validate": "npm run quality && npm run synth:test",
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kronis/game-base-service.git"
+  },
+  "keywords": [
+    "loupeen",
+    "rts",
+    "gaming",
+    "aws-cdk",
+    "serverless",
+    "base-building",
+    "game-service"
+  ],
+  "author": "Loupeen RTS Platform",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "aws-cdk-lib": "^2.149.0",
+    "constructs": "^10.3.0",
+    "@aws-sdk/client-dynamodb": "^3.621.0",
+    "@aws-sdk/lib-dynamodb": "^3.621.0",
+    "@aws-sdk/client-lambda": "^3.621.0",
+    "@aws-sdk/client-api-gateway": "^3.621.0",
+    "@cedar-policy/cedar-wasm": "^4.1.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.9.0",
+    "@types/aws-lambda": "^8.10.142",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.14.15",
+    "@typescript-eslint/eslint-plugin": "^8.0.1",
+    "@typescript-eslint/parser": "^8.0.1",
+    "aws-cdk": "^2.149.0",
+    "eslint": "^9.9.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
+  },
+  "peerDependencies": {
+    "aws-cdk-lib": "^2.149.0",
+    "constructs": "^10.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
