@@ -1,0 +1,4701 @@
+{
+ "Description": "Loupeen RTS Platform - Base Building and Management Service (test)",
+ "Resources": {
+  "TablesPlayerBasesTableDB9471C6": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "playerId",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "baseId",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "mapSectionId",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "coordinateHash",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "allianceId",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "createdAt",
+      "AttributeType": "N"
+     },
+     {
+      "AttributeName": "status",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "lastActiveAt",
+      "AttributeType": "N"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "DeletionProtectionEnabled": false,
+    "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "LocationIndex",
+      "KeySchema": [
+       {
+        "AttributeName": "mapSectionId",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "coordinateHash",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     },
+     {
+      "IndexName": "AllianceIndex",
+      "KeySchema": [
+       {
+        "AttributeName": "allianceId",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "createdAt",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     },
+     {
+      "IndexName": "StatusIndex",
+      "KeySchema": [
+       {
+        "AttributeName": "status",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "lastActiveAt",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "KEYS_ONLY"
+      }
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "playerId",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "baseId",
+      "KeyType": "RANGE"
+     }
+    ],
+    "PointInTimeRecoverySpecification": {
+     "PointInTimeRecoveryEnabled": false
+    },
+    "SSESpecification": {
+     "SSEEnabled": true
+    },
+    "TableName": "game-base-player-bases-test"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Tables/PlayerBasesTable/Resource"
+   }
+  },
+  "TablesBaseTemplatesTableE76BB3BA": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "templateId",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "baseType",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "level",
+      "AttributeType": "N"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "DeletionProtectionEnabled": false,
+    "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "TypeLevelIndex",
+      "KeySchema": [
+       {
+        "AttributeName": "baseType",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "level",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "templateId",
+      "KeyType": "HASH"
+     }
+    ],
+    "PointInTimeRecoverySpecification": {
+     "PointInTimeRecoveryEnabled": false
+    },
+    "SSESpecification": {
+     "SSEEnabled": true
+    },
+    "TableName": "game-base-templates-test"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Tables/BaseTemplatesTable/Resource"
+   }
+  },
+  "TablesSpawnLocationsTableC156BF2E": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "spawnRegionId",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "spawnLocationId",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "isAvailable",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "lastUsedAt",
+      "AttributeType": "N"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "DeletionProtectionEnabled": false,
+    "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "AvailabilityIndex",
+      "KeySchema": [
+       {
+        "AttributeName": "isAvailable",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "lastUsedAt",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "spawnRegionId",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "spawnLocationId",
+      "KeyType": "RANGE"
+     }
+    ],
+    "PointInTimeRecoverySpecification": {
+     "PointInTimeRecoveryEnabled": false
+    },
+    "SSESpecification": {
+     "SSEEnabled": true
+    },
+    "TableName": "game-base-spawn-locations-test",
+    "TimeToLiveSpecification": {
+     "AttributeName": "ttl",
+     "Enabled": true
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Tables/SpawnLocationsTable/Resource"
+   }
+  },
+  "TablesBaseUpgradesTable17BAF8AD": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "playerId",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "upgradeId",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "status",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "completionTime",
+      "AttributeType": "N"
+     },
+     {
+      "AttributeName": "baseId",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "startedAt",
+      "AttributeType": "N"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "DeletionProtectionEnabled": false,
+    "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "StatusIndex",
+      "KeySchema": [
+       {
+        "AttributeName": "status",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "completionTime",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     },
+     {
+      "IndexName": "BaseIndex",
+      "KeySchema": [
+       {
+        "AttributeName": "baseId",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "startedAt",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "playerId",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "upgradeId",
+      "KeyType": "RANGE"
+     }
+    ],
+    "PointInTimeRecoverySpecification": {
+     "PointInTimeRecoveryEnabled": false
+    },
+    "SSESpecification": {
+     "SSEEnabled": true
+    },
+    "TableName": "game-base-upgrades-test",
+    "TimeToLiveSpecification": {
+     "AttributeName": "ttl",
+     "Enabled": true
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Tables/BaseUpgradesTable/Resource"
+   }
+  },
+  "LambdasCreateBaseFunctionServiceRole5E175614": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Lambdas/CreateBaseFunction/ServiceRole/Resource"
+   }
+  },
+  "LambdasCreateBaseFunctionServiceRoleDefaultPolicy9DED7810": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TablesBaseUpgradesTable17BAF8AD",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "TablesPlayerBasesTableDB9471C6",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "TablesSpawnLocationsTableC156BF2E",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TablesBaseUpgradesTable17BAF8AD",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TablesPlayerBasesTableDB9471C6",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TablesSpawnLocationsTableC156BF2E",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TablesBaseTemplatesTableE76BB3BA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TablesBaseTemplatesTableE76BB3BA",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "xray:PutTelemetryRecords",
+        "xray:PutTraceSegments"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "LambdasCreateBaseFunctionServiceRoleDefaultPolicy9DED7810",
+    "Roles": [
+     {
+      "Ref": "LambdasCreateBaseFunctionServiceRole5E175614"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Lambdas/CreateBaseFunction/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "LambdasCreateBaseFunction6DB88C2C": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-728427470046-eu-north-1",
+     "S3Key": "f43a9cd6a1bf672f87c87d0df021cbfc81b6de257c2b0e283eb121f0b626ca1b.zip"
+    },
+    "Description": "Creates new player base with spawn location calculation and resource allocation",
+    "Environment": {
+     "Variables": {
+      "ENVIRONMENT": "test",
+      "PLAYER_BASES_TABLE": {
+       "Ref": "TablesPlayerBasesTableDB9471C6"
+      },
+      "BASE_TEMPLATES_TABLE": {
+       "Ref": "TablesBaseTemplatesTableE76BB3BA"
+      },
+      "SPAWN_LOCATIONS_TABLE": {
+       "Ref": "TablesSpawnLocationsTableC156BF2E"
+      },
+      "BASE_UPGRADES_TABLE": {
+       "Ref": "TablesBaseUpgradesTable17BAF8AD"
+      },
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "FunctionName": "game-base-create-test",
+    "Handler": "index.handler",
+    "MemorySize": 512,
+    "Role": {
+     "Fn::GetAtt": [
+      "LambdasCreateBaseFunctionServiceRole5E175614",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "LambdasCreateBaseFunctionServiceRoleDefaultPolicy9DED7810",
+    "LambdasCreateBaseFunctionServiceRole5E175614"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Lambdas/CreateBaseFunction/Resource",
+    "aws:asset:path": "asset.f43a9cd6a1bf672f87c87d0df021cbfc81b6de257c2b0e283eb121f0b626ca1b",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "LambdasCreateBaseFunctionLogRetentionF8C11097": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "LambdasCreateBaseFunction6DB88C2C"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 7
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Lambdas/CreateBaseFunction/LogRetention/Resource"
+   }
+  },
+  "LambdasUpgradeBaseFunctionServiceRoleD4C8138E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Lambdas/UpgradeBaseFunction/ServiceRole/Resource"
+   }
+  },
+  "LambdasUpgradeBaseFunctionServiceRoleDefaultPolicyDFD8D8FE": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TablesBaseUpgradesTable17BAF8AD",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "TablesPlayerBasesTableDB9471C6",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "TablesSpawnLocationsTableC156BF2E",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TablesBaseUpgradesTable17BAF8AD",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TablesPlayerBasesTableDB9471C6",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TablesSpawnLocationsTableC156BF2E",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TablesBaseTemplatesTableE76BB3BA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TablesBaseTemplatesTableE76BB3BA",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "xray:PutTelemetryRecords",
+        "xray:PutTraceSegments"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "LambdasUpgradeBaseFunctionServiceRoleDefaultPolicyDFD8D8FE",
+    "Roles": [
+     {
+      "Ref": "LambdasUpgradeBaseFunctionServiceRoleD4C8138E"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Lambdas/UpgradeBaseFunction/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "LambdasUpgradeBaseFunctionD0AC144B": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-728427470046-eu-north-1",
+     "S3Key": "72bbb94119fa86f9b09bc8775f96328540308f34b6f9c5b75df76d2eadff2294.zip"
+    },
+    "Description": "Processes base upgrades, validates requirements, and updates base statistics",
+    "Environment": {
+     "Variables": {
+      "ENVIRONMENT": "test",
+      "PLAYER_BASES_TABLE": {
+       "Ref": "TablesPlayerBasesTableDB9471C6"
+      },
+      "BASE_TEMPLATES_TABLE": {
+       "Ref": "TablesBaseTemplatesTableE76BB3BA"
+      },
+      "SPAWN_LOCATIONS_TABLE": {
+       "Ref": "TablesSpawnLocationsTableC156BF2E"
+      },
+      "BASE_UPGRADES_TABLE": {
+       "Ref": "TablesBaseUpgradesTable17BAF8AD"
+      },
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "FunctionName": "game-base-upgrade-test",
+    "Handler": "index.handler",
+    "MemorySize": 512,
+    "Role": {
+     "Fn::GetAtt": [
+      "LambdasUpgradeBaseFunctionServiceRoleD4C8138E",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "LambdasUpgradeBaseFunctionServiceRoleDefaultPolicyDFD8D8FE",
+    "LambdasUpgradeBaseFunctionServiceRoleD4C8138E"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Lambdas/UpgradeBaseFunction/Resource",
+    "aws:asset:path": "asset.72bbb94119fa86f9b09bc8775f96328540308f34b6f9c5b75df76d2eadff2294",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "LambdasUpgradeBaseFunctionLogRetention903F81F6": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "LambdasUpgradeBaseFunctionD0AC144B"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 7
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Lambdas/UpgradeBaseFunction/LogRetention/Resource"
+   }
+  },
+  "LambdasMoveBaseFunctionServiceRole11B877C7": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Lambdas/MoveBaseFunction/ServiceRole/Resource"
+   }
+  },
+  "LambdasMoveBaseFunctionServiceRoleDefaultPolicyB00490FB": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TablesBaseUpgradesTable17BAF8AD",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "TablesPlayerBasesTableDB9471C6",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "TablesSpawnLocationsTableC156BF2E",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TablesBaseUpgradesTable17BAF8AD",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TablesPlayerBasesTableDB9471C6",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TablesSpawnLocationsTableC156BF2E",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TablesBaseTemplatesTableE76BB3BA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TablesBaseTemplatesTableE76BB3BA",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "xray:PutTelemetryRecords",
+        "xray:PutTraceSegments"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "LambdasMoveBaseFunctionServiceRoleDefaultPolicyB00490FB",
+    "Roles": [
+     {
+      "Ref": "LambdasMoveBaseFunctionServiceRole11B877C7"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Lambdas/MoveBaseFunction/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "LambdasMoveBaseFunction8DCC8610": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-728427470046-eu-north-1",
+     "S3Key": "0b303b829d4c4c726c16fd547da5dd8f65092d91216a7ea5e36cfea2408f48d7.zip"
+    },
+    "Description": "Relocates player base with cooldown and teleport cost validation",
+    "Environment": {
+     "Variables": {
+      "ENVIRONMENT": "test",
+      "PLAYER_BASES_TABLE": {
+       "Ref": "TablesPlayerBasesTableDB9471C6"
+      },
+      "BASE_TEMPLATES_TABLE": {
+       "Ref": "TablesBaseTemplatesTableE76BB3BA"
+      },
+      "SPAWN_LOCATIONS_TABLE": {
+       "Ref": "TablesSpawnLocationsTableC156BF2E"
+      },
+      "BASE_UPGRADES_TABLE": {
+       "Ref": "TablesBaseUpgradesTable17BAF8AD"
+      },
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "FunctionName": "game-base-move-test",
+    "Handler": "index.handler",
+    "MemorySize": 512,
+    "Role": {
+     "Fn::GetAtt": [
+      "LambdasMoveBaseFunctionServiceRole11B877C7",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "LambdasMoveBaseFunctionServiceRoleDefaultPolicyB00490FB",
+    "LambdasMoveBaseFunctionServiceRole11B877C7"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Lambdas/MoveBaseFunction/Resource",
+    "aws:asset:path": "asset.0b303b829d4c4c726c16fd547da5dd8f65092d91216a7ea5e36cfea2408f48d7",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "LambdasMoveBaseFunctionLogRetention9868E4F3": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "LambdasMoveBaseFunction8DCC8610"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 7
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Lambdas/MoveBaseFunction/LogRetention/Resource"
+   }
+  },
+  "LambdasListBasesFunctionServiceRole4D32D299": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Lambdas/ListBasesFunction/ServiceRole/Resource"
+   }
+  },
+  "LambdasListBasesFunctionServiceRoleDefaultPolicyF79A4D58": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TablesBaseUpgradesTable17BAF8AD",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "TablesPlayerBasesTableDB9471C6",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "TablesSpawnLocationsTableC156BF2E",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TablesBaseUpgradesTable17BAF8AD",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TablesPlayerBasesTableDB9471C6",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TablesSpawnLocationsTableC156BF2E",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TablesBaseTemplatesTableE76BB3BA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TablesBaseTemplatesTableE76BB3BA",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "xray:PutTelemetryRecords",
+        "xray:PutTraceSegments"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "LambdasListBasesFunctionServiceRoleDefaultPolicyF79A4D58",
+    "Roles": [
+     {
+      "Ref": "LambdasListBasesFunctionServiceRole4D32D299"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Lambdas/ListBasesFunction/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "LambdasListBasesFunction4B961558": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-728427470046-eu-north-1",
+     "S3Key": "681e62c8f7860dc8544b59adc61f72abf6d6ef5e7cc4546eda119cb5d6c8dcb1.zip"
+    },
+    "Description": "Returns paginated list of player bases with summary information",
+    "Environment": {
+     "Variables": {
+      "ENVIRONMENT": "test",
+      "PLAYER_BASES_TABLE": {
+       "Ref": "TablesPlayerBasesTableDB9471C6"
+      },
+      "BASE_TEMPLATES_TABLE": {
+       "Ref": "TablesBaseTemplatesTableE76BB3BA"
+      },
+      "SPAWN_LOCATIONS_TABLE": {
+       "Ref": "TablesSpawnLocationsTableC156BF2E"
+      },
+      "BASE_UPGRADES_TABLE": {
+       "Ref": "TablesBaseUpgradesTable17BAF8AD"
+      },
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "FunctionName": "game-base-list-test",
+    "Handler": "index.handler",
+    "MemorySize": 512,
+    "Role": {
+     "Fn::GetAtt": [
+      "LambdasListBasesFunctionServiceRole4D32D299",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "LambdasListBasesFunctionServiceRoleDefaultPolicyF79A4D58",
+    "LambdasListBasesFunctionServiceRole4D32D299"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Lambdas/ListBasesFunction/Resource",
+    "aws:asset:path": "asset.681e62c8f7860dc8544b59adc61f72abf6d6ef5e7cc4546eda119cb5d6c8dcb1",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "LambdasListBasesFunctionLogRetentionBE71AD96": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "LambdasListBasesFunction4B961558"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 7
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Lambdas/ListBasesFunction/LogRetention/Resource"
+   }
+  },
+  "LambdasGetBaseDetailsFunctionServiceRole44015BC2": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Lambdas/GetBaseDetailsFunction/ServiceRole/Resource"
+   }
+  },
+  "LambdasGetBaseDetailsFunctionServiceRoleDefaultPolicy0CB0776E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TablesBaseUpgradesTable17BAF8AD",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "TablesPlayerBasesTableDB9471C6",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "TablesSpawnLocationsTableC156BF2E",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TablesBaseUpgradesTable17BAF8AD",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TablesPlayerBasesTableDB9471C6",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TablesSpawnLocationsTableC156BF2E",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TablesBaseTemplatesTableE76BB3BA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TablesBaseTemplatesTableE76BB3BA",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "xray:PutTelemetryRecords",
+        "xray:PutTraceSegments"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "LambdasGetBaseDetailsFunctionServiceRoleDefaultPolicy0CB0776E",
+    "Roles": [
+     {
+      "Ref": "LambdasGetBaseDetailsFunctionServiceRole44015BC2"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Lambdas/GetBaseDetailsFunction/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "LambdasGetBaseDetailsFunctionDE307A6B": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-728427470046-eu-north-1",
+     "S3Key": "f3ba468a3f321a71ae3ca497cc7cda8e410c1f0a66c5609d3c401f5a77e1fe20.zip"
+    },
+    "Description": "Returns detailed information about specific player base",
+    "Environment": {
+     "Variables": {
+      "ENVIRONMENT": "test",
+      "PLAYER_BASES_TABLE": {
+       "Ref": "TablesPlayerBasesTableDB9471C6"
+      },
+      "BASE_TEMPLATES_TABLE": {
+       "Ref": "TablesBaseTemplatesTableE76BB3BA"
+      },
+      "SPAWN_LOCATIONS_TABLE": {
+       "Ref": "TablesSpawnLocationsTableC156BF2E"
+      },
+      "BASE_UPGRADES_TABLE": {
+       "Ref": "TablesBaseUpgradesTable17BAF8AD"
+      },
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "FunctionName": "game-base-details-test",
+    "Handler": "index.handler",
+    "MemorySize": 512,
+    "Role": {
+     "Fn::GetAtt": [
+      "LambdasGetBaseDetailsFunctionServiceRole44015BC2",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "LambdasGetBaseDetailsFunctionServiceRoleDefaultPolicy0CB0776E",
+    "LambdasGetBaseDetailsFunctionServiceRole44015BC2"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Lambdas/GetBaseDetailsFunction/Resource",
+    "aws:asset:path": "asset.f3ba468a3f321a71ae3ca497cc7cda8e410c1f0a66c5609d3c401f5a77e1fe20",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "LambdasGetBaseDetailsFunctionLogRetention35B8D417": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "LambdasGetBaseDetailsFunctionDE307A6B"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 7
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Lambdas/GetBaseDetailsFunction/LogRetention/Resource"
+   }
+  },
+  "LambdasCalculateSpawnLocationFunctionServiceRoleED69EE1F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Lambdas/CalculateSpawnLocationFunction/ServiceRole/Resource"
+   }
+  },
+  "LambdasCalculateSpawnLocationFunctionServiceRoleDefaultPolicy068B7206": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TablesBaseUpgradesTable17BAF8AD",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "TablesPlayerBasesTableDB9471C6",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "TablesSpawnLocationsTableC156BF2E",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TablesBaseUpgradesTable17BAF8AD",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TablesPlayerBasesTableDB9471C6",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TablesSpawnLocationsTableC156BF2E",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TablesBaseTemplatesTableE76BB3BA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TablesBaseTemplatesTableE76BB3BA",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "xray:PutTelemetryRecords",
+        "xray:PutTraceSegments"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "LambdasCalculateSpawnLocationFunctionServiceRoleDefaultPolicy068B7206",
+    "Roles": [
+     {
+      "Ref": "LambdasCalculateSpawnLocationFunctionServiceRoleED69EE1F"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Lambdas/CalculateSpawnLocationFunction/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "LambdasCalculateSpawnLocationFunction568C06FE": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-728427470046-eu-north-1",
+     "S3Key": "2e4dfc6ae51b11077275a99a1596861c6ca5561d7fa70615748f41327bb9aa1a.zip"
+    },
+    "Description": "Calculates optimal spawn location for new players based on population density",
+    "Environment": {
+     "Variables": {
+      "ENVIRONMENT": "test",
+      "PLAYER_BASES_TABLE": {
+       "Ref": "TablesPlayerBasesTableDB9471C6"
+      },
+      "BASE_TEMPLATES_TABLE": {
+       "Ref": "TablesBaseTemplatesTableE76BB3BA"
+      },
+      "SPAWN_LOCATIONS_TABLE": {
+       "Ref": "TablesSpawnLocationsTableC156BF2E"
+      },
+      "BASE_UPGRADES_TABLE": {
+       "Ref": "TablesBaseUpgradesTable17BAF8AD"
+      },
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "FunctionName": "game-base-spawn-test",
+    "Handler": "index.handler",
+    "MemorySize": 512,
+    "Role": {
+     "Fn::GetAtt": [
+      "LambdasCalculateSpawnLocationFunctionServiceRoleED69EE1F",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "LambdasCalculateSpawnLocationFunctionServiceRoleDefaultPolicy068B7206",
+    "LambdasCalculateSpawnLocationFunctionServiceRoleED69EE1F"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Lambdas/CalculateSpawnLocationFunction/Resource",
+    "aws:asset:path": "asset.2e4dfc6ae51b11077275a99a1596861c6ca5561d7fa70615748f41327bb9aa1a",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "LambdasCalculateSpawnLocationFunctionLogRetention0284C28D": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "LambdasCalculateSpawnLocationFunction568C06FE"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 7
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Lambdas/CalculateSpawnLocationFunction/LogRetention/Resource"
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource"
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:DeleteRetentionPolicy",
+        "logs:PutRetentionPolicy"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+    "Roles": [
+     {
+      "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Handler": "index.handler",
+    "Runtime": "nodejs22.x",
+    "Timeout": 900,
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-728427470046-eu-north-1",
+     "S3Key": "2819175352ad1ce0dae768e83fc328fb70fb5f10b4a8ff0ccbcb791f02b0716d.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
+    "aws:asset:path": "asset.2819175352ad1ce0dae768e83fc328fb70fb5f10b4a8ff0ccbcb791f02b0716d",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "ApisApiAccessLogGroup757FD323": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/apigateway/game-base-service-test",
+    "RetentionInDays": 7
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/ApiAccessLogGroup/Resource"
+   }
+  },
+  "ApisGameBaseServiceApi9B207532": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "BinaryMediaTypes": [
+     "multipart/form-data",
+     "image/*"
+    ],
+    "Description": "Loupeen RTS Platform - Base Building and Management API (test)",
+    "EndpointConfiguration": {
+     "Types": [
+      "REGIONAL"
+     ]
+    },
+    "MinimumCompressionSize": 1000,
+    "Name": "game-base-service-test"
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Resource"
+   }
+  },
+  "ApisGameBaseServiceApiCloudWatchRole939F74F6": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/CloudWatchRole/Resource"
+   }
+  },
+  "ApisGameBaseServiceApiAccount1F0ACF04": {
+   "Type": "AWS::ApiGateway::Account",
+   "Properties": {
+    "CloudWatchRoleArn": {
+     "Fn::GetAtt": [
+      "ApisGameBaseServiceApiCloudWatchRole939F74F6",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "ApisGameBaseServiceApi9B207532"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Account"
+   }
+  },
+  "ApisGameBaseServiceApiDeployment10A2263A8f577613b017b4b9100db8867e9a287e": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Loupeen RTS Platform - Base Building and Management API (test)",
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "DependsOn": [
+    "ApisGameBaseServiceApiBodyValidatorCF56C33A",
+    "ApisGameBaseServiceApiCreateBaseRequest7CB50A0B",
+    "ApisGameBaseServiceApibasesbaseIdmoveOPTIONSA9933419",
+    "ApisGameBaseServiceApibasesbaseIdmovePUTBC30916C",
+    "ApisGameBaseServiceApibasesbaseIdmove0A4EDCAA",
+    "ApisGameBaseServiceApibasesbaseIdOPTIONSD3192756",
+    "ApisGameBaseServiceApibasesbaseId4651DBC7",
+    "ApisGameBaseServiceApibasesbaseIdupgradeOPTIONSE894DA9E",
+    "ApisGameBaseServiceApibasesbaseIdupgradePUTECAFF73B",
+    "ApisGameBaseServiceApibasesbaseIdupgrade4D0356F4",
+    "ApisGameBaseServiceApibasesOPTIONS4B504159",
+    "ApisGameBaseServiceApibasesPOST9708F162",
+    "ApisGameBaseServiceApibasesBA984BCF",
+    "ApisGameBaseServiceApiOPTIONS729FEDDF",
+    "ApisGameBaseServiceApiplayersplayerIdbasesbaseIdGET9B61FA1B",
+    "ApisGameBaseServiceApiplayersplayerIdbasesbaseIdOPTIONS4CDAB315",
+    "ApisGameBaseServiceApiplayersplayerIdbasesbaseIdD9072B8F",
+    "ApisGameBaseServiceApiplayersplayerIdbasesGET3C52E225",
+    "ApisGameBaseServiceApiplayersplayerIdbasesOPTIONSECD56C09",
+    "ApisGameBaseServiceApiplayersplayerIdbases6AA8FB14",
+    "ApisGameBaseServiceApiplayersplayerIdOPTIONS724DC2F4",
+    "ApisGameBaseServiceApiplayersplayerId367AC66E",
+    "ApisGameBaseServiceApiplayersOPTIONS415425D2",
+    "ApisGameBaseServiceApiplayers97FA84C6",
+    "ApisGameBaseServiceApispawncalculateOPTIONS54B9434A",
+    "ApisGameBaseServiceApispawncalculatePOSTED1AE324",
+    "ApisGameBaseServiceApispawncalculateFD02E958",
+    "ApisGameBaseServiceApispawnOPTIONS32DA2C0B",
+    "ApisGameBaseServiceApispawn22A55749",
+    "ApisGameBaseServiceApiErrorResponseA6003FF3",
+    "ApisGameBaseServiceApiFullValidatorDA60CDC1",
+    "ApisGameBaseServiceApiMoveBaseRequestDECFAA8E",
+    "ApisGameBaseServiceApiParamsValidator0E3B6AC6",
+    "ApisGameBaseServiceApiSuccessResponse0133C9E9",
+    "ApisGameBaseServiceApiUpgradeBaseRequestF92186EA"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Deployment/Resource",
+    "aws:cdk:do-not-refactor": true
+   }
+  },
+  "ApisGameBaseServiceApiDeploymentStagetestC12A5D04": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "AccessLogSetting": {
+     "DestinationArn": {
+      "Fn::GetAtt": [
+       "ApisApiAccessLogGroup757FD323",
+       "Arn"
+      ]
+     },
+     "Format": "{\"requestId\":\"$context.requestId\",\"ip\":\"$context.identity.sourceIp\",\"user\":\"$context.identity.user\",\"caller\":\"$context.identity.caller\",\"requestTime\":\"$context.requestTime\",\"httpMethod\":\"$context.httpMethod\",\"resourcePath\":\"$context.resourcePath\",\"status\":\"$context.status\",\"protocol\":\"$context.protocol\",\"responseLength\":\"$context.responseLength\"}"
+    },
+    "DeploymentId": {
+     "Ref": "ApisGameBaseServiceApiDeployment10A2263A8f577613b017b4b9100db8867e9a287e"
+    },
+    "MethodSettings": [
+     {
+      "DataTraceEnabled": true,
+      "HttpMethod": "*",
+      "LoggingLevel": "INFO",
+      "MetricsEnabled": true,
+      "ResourcePath": "/*",
+      "ThrottlingBurstLimit": 200,
+      "ThrottlingRateLimit": 100
+     }
+    ],
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    },
+    "StageName": "test"
+   },
+   "DependsOn": [
+    "ApisGameBaseServiceApiAccount1F0ACF04"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/DeploymentStage.test/Resource"
+   }
+  },
+  "ApisGameBaseServiceApiOPTIONS729FEDDF": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Player-Id,X-Alliance-Id'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "ApisGameBaseServiceApi9B207532",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/OPTIONS/Resource"
+   }
+  },
+  "ApisGameBaseServiceApibasesBA984BCF": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "ApisGameBaseServiceApi9B207532",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "bases",
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/bases/Resource"
+   }
+  },
+  "ApisGameBaseServiceApibasesOPTIONS4B504159": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Player-Id,X-Alliance-Id'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "ApisGameBaseServiceApibasesBA984BCF"
+    },
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/bases/OPTIONS/Resource"
+   }
+  },
+  "ApisGameBaseServiceApibasesPOSTApiPermissionGameBaseServicetestApisGameBaseServiceApi4B31794CPOSTbases9CF1D280": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "LambdasCreateBaseFunction6DB88C2C",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-north-1:728427470046:",
+       {
+        "Ref": "ApisGameBaseServiceApi9B207532"
+       },
+       "/",
+       {
+        "Ref": "ApisGameBaseServiceApiDeploymentStagetestC12A5D04"
+       },
+       "/POST/bases"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/bases/POST/ApiPermission.GameBaseServicetestApisGameBaseServiceApi4B31794C.POST..bases"
+   }
+  },
+  "ApisGameBaseServiceApibasesPOSTApiPermissionTestGameBaseServicetestApisGameBaseServiceApi4B31794CPOSTbases28F24061": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "LambdasCreateBaseFunction6DB88C2C",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-north-1:728427470046:",
+       {
+        "Ref": "ApisGameBaseServiceApi9B207532"
+       },
+       "/test-invoke-stage/POST/bases"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/bases/POST/ApiPermission.Test.GameBaseServicetestApisGameBaseServiceApi4B31794C.POST..bases"
+   }
+  },
+  "ApisGameBaseServiceApibasesPOST9708F162": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:eu-north-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "LambdasCreateBaseFunction6DB88C2C",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "MethodResponses": [
+     {
+      "ResponseModels": {
+       "application/json": {
+        "Ref": "ApisGameBaseServiceApiSuccessResponse0133C9E9"
+       }
+      },
+      "StatusCode": "201"
+     },
+     {
+      "ResponseModels": {
+       "application/json": {
+        "Ref": "ApisGameBaseServiceApiErrorResponseA6003FF3"
+       }
+      },
+      "StatusCode": "400"
+     }
+    ],
+    "RequestModels": {
+     "application/json": {
+      "Ref": "ApisGameBaseServiceApiCreateBaseRequest7CB50A0B"
+     }
+    },
+    "RequestValidatorId": {
+     "Ref": "ApisGameBaseServiceApiBodyValidatorCF56C33A"
+    },
+    "ResourceId": {
+     "Ref": "ApisGameBaseServiceApibasesBA984BCF"
+    },
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/bases/POST/Resource"
+   }
+  },
+  "ApisGameBaseServiceApibasesbaseId4651DBC7": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "ApisGameBaseServiceApibasesBA984BCF"
+    },
+    "PathPart": "{baseId}",
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/bases/{baseId}/Resource"
+   }
+  },
+  "ApisGameBaseServiceApibasesbaseIdOPTIONSD3192756": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Player-Id,X-Alliance-Id'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "ApisGameBaseServiceApibasesbaseId4651DBC7"
+    },
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/bases/{baseId}/OPTIONS/Resource"
+   }
+  },
+  "ApisGameBaseServiceApibasesbaseIdupgrade4D0356F4": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "ApisGameBaseServiceApibasesbaseId4651DBC7"
+    },
+    "PathPart": "upgrade",
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/bases/{baseId}/upgrade/Resource"
+   }
+  },
+  "ApisGameBaseServiceApibasesbaseIdupgradeOPTIONSE894DA9E": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Player-Id,X-Alliance-Id'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "ApisGameBaseServiceApibasesbaseIdupgrade4D0356F4"
+    },
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/bases/{baseId}/upgrade/OPTIONS/Resource"
+   }
+  },
+  "ApisGameBaseServiceApibasesbaseIdupgradePUTApiPermissionGameBaseServicetestApisGameBaseServiceApi4B31794CPUTbasesbaseIdupgradeA56B9AA8": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "LambdasUpgradeBaseFunctionD0AC144B",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-north-1:728427470046:",
+       {
+        "Ref": "ApisGameBaseServiceApi9B207532"
+       },
+       "/",
+       {
+        "Ref": "ApisGameBaseServiceApiDeploymentStagetestC12A5D04"
+       },
+       "/PUT/bases/*/upgrade"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/bases/{baseId}/upgrade/PUT/ApiPermission.GameBaseServicetestApisGameBaseServiceApi4B31794C.PUT..bases.{baseId}.upgrade"
+   }
+  },
+  "ApisGameBaseServiceApibasesbaseIdupgradePUTApiPermissionTestGameBaseServicetestApisGameBaseServiceApi4B31794CPUTbasesbaseIdupgrade2D156A32": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "LambdasUpgradeBaseFunctionD0AC144B",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-north-1:728427470046:",
+       {
+        "Ref": "ApisGameBaseServiceApi9B207532"
+       },
+       "/test-invoke-stage/PUT/bases/*/upgrade"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/bases/{baseId}/upgrade/PUT/ApiPermission.Test.GameBaseServicetestApisGameBaseServiceApi4B31794C.PUT..bases.{baseId}.upgrade"
+   }
+  },
+  "ApisGameBaseServiceApibasesbaseIdupgradePUTECAFF73B": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "PUT",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:eu-north-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "LambdasUpgradeBaseFunctionD0AC144B",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "RequestModels": {
+     "application/json": {
+      "Ref": "ApisGameBaseServiceApiUpgradeBaseRequestF92186EA"
+     }
+    },
+    "RequestParameters": {
+     "method.request.path.baseId": true
+    },
+    "RequestValidatorId": {
+     "Ref": "ApisGameBaseServiceApiFullValidatorDA60CDC1"
+    },
+    "ResourceId": {
+     "Ref": "ApisGameBaseServiceApibasesbaseIdupgrade4D0356F4"
+    },
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/bases/{baseId}/upgrade/PUT/Resource"
+   }
+  },
+  "ApisGameBaseServiceApibasesbaseIdmove0A4EDCAA": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "ApisGameBaseServiceApibasesbaseId4651DBC7"
+    },
+    "PathPart": "move",
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/bases/{baseId}/move/Resource"
+   }
+  },
+  "ApisGameBaseServiceApibasesbaseIdmoveOPTIONSA9933419": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Player-Id,X-Alliance-Id'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "ApisGameBaseServiceApibasesbaseIdmove0A4EDCAA"
+    },
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/bases/{baseId}/move/OPTIONS/Resource"
+   }
+  },
+  "ApisGameBaseServiceApibasesbaseIdmovePUTApiPermissionGameBaseServicetestApisGameBaseServiceApi4B31794CPUTbasesbaseIdmoveC917C7B5": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "LambdasMoveBaseFunction8DCC8610",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-north-1:728427470046:",
+       {
+        "Ref": "ApisGameBaseServiceApi9B207532"
+       },
+       "/",
+       {
+        "Ref": "ApisGameBaseServiceApiDeploymentStagetestC12A5D04"
+       },
+       "/PUT/bases/*/move"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/bases/{baseId}/move/PUT/ApiPermission.GameBaseServicetestApisGameBaseServiceApi4B31794C.PUT..bases.{baseId}.move"
+   }
+  },
+  "ApisGameBaseServiceApibasesbaseIdmovePUTApiPermissionTestGameBaseServicetestApisGameBaseServiceApi4B31794CPUTbasesbaseIdmove708CF38F": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "LambdasMoveBaseFunction8DCC8610",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-north-1:728427470046:",
+       {
+        "Ref": "ApisGameBaseServiceApi9B207532"
+       },
+       "/test-invoke-stage/PUT/bases/*/move"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/bases/{baseId}/move/PUT/ApiPermission.Test.GameBaseServicetestApisGameBaseServiceApi4B31794C.PUT..bases.{baseId}.move"
+   }
+  },
+  "ApisGameBaseServiceApibasesbaseIdmovePUTBC30916C": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "PUT",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:eu-north-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "LambdasMoveBaseFunction8DCC8610",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "RequestModels": {
+     "application/json": {
+      "Ref": "ApisGameBaseServiceApiMoveBaseRequestDECFAA8E"
+     }
+    },
+    "RequestParameters": {
+     "method.request.path.baseId": true
+    },
+    "RequestValidatorId": {
+     "Ref": "ApisGameBaseServiceApiFullValidatorDA60CDC1"
+    },
+    "ResourceId": {
+     "Ref": "ApisGameBaseServiceApibasesbaseIdmove0A4EDCAA"
+    },
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/bases/{baseId}/move/PUT/Resource"
+   }
+  },
+  "ApisGameBaseServiceApiplayers97FA84C6": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "ApisGameBaseServiceApi9B207532",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "players",
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/players/Resource"
+   }
+  },
+  "ApisGameBaseServiceApiplayersOPTIONS415425D2": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Player-Id,X-Alliance-Id'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "ApisGameBaseServiceApiplayers97FA84C6"
+    },
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/players/OPTIONS/Resource"
+   }
+  },
+  "ApisGameBaseServiceApiplayersplayerId367AC66E": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "ApisGameBaseServiceApiplayers97FA84C6"
+    },
+    "PathPart": "{playerId}",
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/players/{playerId}/Resource"
+   }
+  },
+  "ApisGameBaseServiceApiplayersplayerIdOPTIONS724DC2F4": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Player-Id,X-Alliance-Id'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "ApisGameBaseServiceApiplayersplayerId367AC66E"
+    },
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/players/{playerId}/OPTIONS/Resource"
+   }
+  },
+  "ApisGameBaseServiceApiplayersplayerIdbases6AA8FB14": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "ApisGameBaseServiceApiplayersplayerId367AC66E"
+    },
+    "PathPart": "bases",
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/players/{playerId}/bases/Resource"
+   }
+  },
+  "ApisGameBaseServiceApiplayersplayerIdbasesOPTIONSECD56C09": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Player-Id,X-Alliance-Id'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "ApisGameBaseServiceApiplayersplayerIdbases6AA8FB14"
+    },
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/players/{playerId}/bases/OPTIONS/Resource"
+   }
+  },
+  "ApisGameBaseServiceApiplayersplayerIdbasesGETApiPermissionGameBaseServicetestApisGameBaseServiceApi4B31794CGETplayersplayerIdbases32D82B4D": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "LambdasListBasesFunction4B961558",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-north-1:728427470046:",
+       {
+        "Ref": "ApisGameBaseServiceApi9B207532"
+       },
+       "/",
+       {
+        "Ref": "ApisGameBaseServiceApiDeploymentStagetestC12A5D04"
+       },
+       "/GET/players/*/bases"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/players/{playerId}/bases/GET/ApiPermission.GameBaseServicetestApisGameBaseServiceApi4B31794C.GET..players.{playerId}.bases"
+   }
+  },
+  "ApisGameBaseServiceApiplayersplayerIdbasesGETApiPermissionTestGameBaseServicetestApisGameBaseServiceApi4B31794CGETplayersplayerIdbases93D8CBC4": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "LambdasListBasesFunction4B961558",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-north-1:728427470046:",
+       {
+        "Ref": "ApisGameBaseServiceApi9B207532"
+       },
+       "/test-invoke-stage/GET/players/*/bases"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/players/{playerId}/bases/GET/ApiPermission.Test.GameBaseServicetestApisGameBaseServiceApi4B31794C.GET..players.{playerId}.bases"
+   }
+  },
+  "ApisGameBaseServiceApiplayersplayerIdbasesGET3C52E225": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:eu-north-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "LambdasListBasesFunction4B961558",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "RequestParameters": {
+     "method.request.path.playerId": true,
+     "method.request.querystring.status": false,
+     "method.request.querystring.limit": false,
+     "method.request.querystring.lastEvaluatedKey": false,
+     "method.request.querystring.includeStats": false
+    },
+    "RequestValidatorId": {
+     "Ref": "ApisGameBaseServiceApiParamsValidator0E3B6AC6"
+    },
+    "ResourceId": {
+     "Ref": "ApisGameBaseServiceApiplayersplayerIdbases6AA8FB14"
+    },
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/players/{playerId}/bases/GET/Resource"
+   }
+  },
+  "ApisGameBaseServiceApiplayersplayerIdbasesbaseIdD9072B8F": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "ApisGameBaseServiceApiplayersplayerIdbases6AA8FB14"
+    },
+    "PathPart": "{baseId}",
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/players/{playerId}/bases/{baseId}/Resource"
+   }
+  },
+  "ApisGameBaseServiceApiplayersplayerIdbasesbaseIdOPTIONS4CDAB315": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Player-Id,X-Alliance-Id'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "ApisGameBaseServiceApiplayersplayerIdbasesbaseIdD9072B8F"
+    },
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/players/{playerId}/bases/{baseId}/OPTIONS/Resource"
+   }
+  },
+  "ApisGameBaseServiceApiplayersplayerIdbasesbaseIdGETApiPermissionGameBaseServicetestApisGameBaseServiceApi4B31794CGETplayersplayerIdbasesbaseId8A20A15A": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "LambdasGetBaseDetailsFunctionDE307A6B",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-north-1:728427470046:",
+       {
+        "Ref": "ApisGameBaseServiceApi9B207532"
+       },
+       "/",
+       {
+        "Ref": "ApisGameBaseServiceApiDeploymentStagetestC12A5D04"
+       },
+       "/GET/players/*/bases/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/players/{playerId}/bases/{baseId}/GET/ApiPermission.GameBaseServicetestApisGameBaseServiceApi4B31794C.GET..players.{playerId}.bases.{baseId}"
+   }
+  },
+  "ApisGameBaseServiceApiplayersplayerIdbasesbaseIdGETApiPermissionTestGameBaseServicetestApisGameBaseServiceApi4B31794CGETplayersplayerIdbasesbaseId454459F4": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "LambdasGetBaseDetailsFunctionDE307A6B",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-north-1:728427470046:",
+       {
+        "Ref": "ApisGameBaseServiceApi9B207532"
+       },
+       "/test-invoke-stage/GET/players/*/bases/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/players/{playerId}/bases/{baseId}/GET/ApiPermission.Test.GameBaseServicetestApisGameBaseServiceApi4B31794C.GET..players.{playerId}.bases.{baseId}"
+   }
+  },
+  "ApisGameBaseServiceApiplayersplayerIdbasesbaseIdGET9B61FA1B": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:eu-north-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "LambdasGetBaseDetailsFunctionDE307A6B",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "RequestParameters": {
+     "method.request.path.playerId": true,
+     "method.request.path.baseId": true
+    },
+    "RequestValidatorId": {
+     "Ref": "ApisGameBaseServiceApiParamsValidator0E3B6AC6"
+    },
+    "ResourceId": {
+     "Ref": "ApisGameBaseServiceApiplayersplayerIdbasesbaseIdD9072B8F"
+    },
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/players/{playerId}/bases/{baseId}/GET/Resource"
+   }
+  },
+  "ApisGameBaseServiceApispawn22A55749": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "ApisGameBaseServiceApi9B207532",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "spawn",
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/spawn/Resource"
+   }
+  },
+  "ApisGameBaseServiceApispawnOPTIONS32DA2C0B": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Player-Id,X-Alliance-Id'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "ApisGameBaseServiceApispawn22A55749"
+    },
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/spawn/OPTIONS/Resource"
+   }
+  },
+  "ApisGameBaseServiceApispawncalculateFD02E958": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "ApisGameBaseServiceApispawn22A55749"
+    },
+    "PathPart": "calculate",
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/spawn/calculate/Resource"
+   }
+  },
+  "ApisGameBaseServiceApispawncalculateOPTIONS54B9434A": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Player-Id,X-Alliance-Id'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "ApisGameBaseServiceApispawncalculateFD02E958"
+    },
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/spawn/calculate/OPTIONS/Resource"
+   }
+  },
+  "ApisGameBaseServiceApispawncalculatePOSTApiPermissionGameBaseServicetestApisGameBaseServiceApi4B31794CPOSTspawncalculate7860D811": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "LambdasCalculateSpawnLocationFunction568C06FE",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-north-1:728427470046:",
+       {
+        "Ref": "ApisGameBaseServiceApi9B207532"
+       },
+       "/",
+       {
+        "Ref": "ApisGameBaseServiceApiDeploymentStagetestC12A5D04"
+       },
+       "/POST/spawn/calculate"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/spawn/calculate/POST/ApiPermission.GameBaseServicetestApisGameBaseServiceApi4B31794C.POST..spawn.calculate"
+   }
+  },
+  "ApisGameBaseServiceApispawncalculatePOSTApiPermissionTestGameBaseServicetestApisGameBaseServiceApi4B31794CPOSTspawncalculate1B610CC2": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "LambdasCalculateSpawnLocationFunction568C06FE",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-north-1:728427470046:",
+       {
+        "Ref": "ApisGameBaseServiceApi9B207532"
+       },
+       "/test-invoke-stage/POST/spawn/calculate"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/spawn/calculate/POST/ApiPermission.Test.GameBaseServicetestApisGameBaseServiceApi4B31794C.POST..spawn.calculate"
+   }
+  },
+  "ApisGameBaseServiceApispawncalculatePOSTED1AE324": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:eu-north-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "LambdasCalculateSpawnLocationFunction568C06FE",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "RequestValidatorId": {
+     "Ref": "ApisGameBaseServiceApiBodyValidatorCF56C33A"
+    },
+    "ResourceId": {
+     "Ref": "ApisGameBaseServiceApispawncalculateFD02E958"
+    },
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/Default/spawn/calculate/POST/Resource"
+   }
+  },
+  "ApisGameBaseServiceApiCreateBaseRequest7CB50A0B": {
+   "Type": "AWS::ApiGateway::Model",
+   "Properties": {
+    "ContentType": "application/json",
+    "Description": "Request model for creating a new base",
+    "Name": "CreateBaseRequest",
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    },
+    "Schema": {
+     "$schema": "http://json-schema.org/draft-04/schema#",
+     "type": "object",
+     "properties": {
+      "playerId": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 50
+      },
+      "baseType": {
+       "type": "string",
+       "enum": [
+        "command_center",
+        "outpost",
+        "fortress",
+        "mining_station",
+        "research_lab"
+       ]
+      },
+      "baseName": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 100
+      },
+      "coordinates": {
+       "type": "object",
+       "properties": {
+        "x": {
+         "type": "number"
+        },
+        "y": {
+         "type": "number"
+        }
+       }
+      },
+      "spawnLocationId": {
+       "type": "string"
+      },
+      "allianceId": {
+       "type": "string"
+      }
+     },
+     "required": [
+      "playerId",
+      "baseType",
+      "baseName"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/CreateBaseRequest/Resource"
+   }
+  },
+  "ApisGameBaseServiceApiUpgradeBaseRequestF92186EA": {
+   "Type": "AWS::ApiGateway::Model",
+   "Properties": {
+    "ContentType": "application/json",
+    "Name": "UpgradeBaseRequest",
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    },
+    "Schema": {
+     "$schema": "http://json-schema.org/draft-04/schema#",
+     "type": "object",
+     "properties": {
+      "playerId": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 50
+      },
+      "baseId": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 50
+      },
+      "upgradeType": {
+       "type": "string",
+       "enum": [
+        "level",
+        "defense",
+        "storage",
+        "production",
+        "specialized"
+       ]
+      },
+      "skipTime": {
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "playerId",
+      "baseId",
+      "upgradeType"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/UpgradeBaseRequest/Resource"
+   }
+  },
+  "ApisGameBaseServiceApiMoveBaseRequestDECFAA8E": {
+   "Type": "AWS::ApiGateway::Model",
+   "Properties": {
+    "ContentType": "application/json",
+    "Name": "MoveBaseRequest",
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    },
+    "Schema": {
+     "$schema": "http://json-schema.org/draft-04/schema#",
+     "type": "object",
+     "properties": {
+      "playerId": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 50
+      },
+      "baseId": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 50
+      },
+      "newCoordinates": {
+       "type": "object",
+       "properties": {
+        "x": {
+         "type": "number"
+        },
+        "y": {
+         "type": "number"
+        }
+       },
+       "required": [
+        "x",
+        "y"
+       ]
+      },
+      "useTeleport": {
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "playerId",
+      "baseId",
+      "newCoordinates"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/MoveBaseRequest/Resource"
+   }
+  },
+  "ApisGameBaseServiceApiSuccessResponse0133C9E9": {
+   "Type": "AWS::ApiGateway::Model",
+   "Properties": {
+    "ContentType": "application/json",
+    "Name": "SuccessResponse",
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    },
+    "Schema": {
+     "$schema": "http://json-schema.org/draft-04/schema#",
+     "type": "object",
+     "properties": {
+      "success": {
+       "type": "boolean"
+      },
+      "data": {
+       "type": "object"
+      },
+      "message": {
+       "type": "string"
+      }
+     },
+     "required": [
+      "success"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/SuccessResponse/Resource"
+   }
+  },
+  "ApisGameBaseServiceApiErrorResponseA6003FF3": {
+   "Type": "AWS::ApiGateway::Model",
+   "Properties": {
+    "ContentType": "application/json",
+    "Name": "ErrorResponse",
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    },
+    "Schema": {
+     "$schema": "http://json-schema.org/draft-04/schema#",
+     "type": "object",
+     "properties": {
+      "success": {
+       "type": "boolean",
+       "enum": [
+        false
+       ]
+      },
+      "error": {
+       "type": "object",
+       "properties": {
+        "code": {
+         "type": "string"
+        },
+        "message": {
+         "type": "string"
+        },
+        "details": {
+         "type": "object"
+        }
+       },
+       "required": [
+        "code",
+        "message"
+       ]
+      }
+     },
+     "required": [
+      "success",
+      "error"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/ErrorResponse/Resource"
+   }
+  },
+  "ApisGameBaseServiceApiBodyValidatorCF56C33A": {
+   "Type": "AWS::ApiGateway::RequestValidator",
+   "Properties": {
+    "Name": "body-validator",
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    },
+    "ValidateRequestBody": true,
+    "ValidateRequestParameters": false
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/BodyValidator/Resource"
+   }
+  },
+  "ApisGameBaseServiceApiParamsValidator0E3B6AC6": {
+   "Type": "AWS::ApiGateway::RequestValidator",
+   "Properties": {
+    "Name": "params-validator",
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    },
+    "ValidateRequestBody": false,
+    "ValidateRequestParameters": true
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/ParamsValidator/Resource"
+   }
+  },
+  "ApisGameBaseServiceApiFullValidatorDA60CDC1": {
+   "Type": "AWS::ApiGateway::RequestValidator",
+   "Properties": {
+    "Name": "full-validator",
+    "RestApiId": {
+     "Ref": "ApisGameBaseServiceApi9B207532"
+    },
+    "ValidateRequestBody": true,
+    "ValidateRequestParameters": true
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Apis/GameBaseServiceApi/FullValidator/Resource"
+   }
+  },
+  "MonitoringAlertTopicB48B06C2": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": "Game Base Service Alerts (test)",
+    "TopicName": "game-base-service-alerts-test"
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Monitoring/AlertTopic/Resource"
+   }
+  },
+  "MonitoringServiceDashboard3B69127A": {
+   "Type": "AWS::CloudWatch::Dashboard",
+   "Properties": {
+    "DashboardBody": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"periodOverride\":\"auto\",\"widgets\":[{\"type\":\"metric\",\"width\":24,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"API Gateway Overview\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/ApiGateway\",\"Count\",\"ApiName\",\"game-base-service-test\",{\"stat\":\"Sum\"}],[{\"label\":\"Success Rate (%)\",\"expression\":\"100 - (errors4xx + errors5xx) / totalCount * 100\"}],[\"AWS/ApiGateway\",\"Count\",\"ApiName\",\"game-base-service-test\",{\"id\":\"totalCount\",\"visible\":false}],[\"AWS/ApiGateway\",\"4XXError\",\"ApiName\",\"game-base-service-test\",{\"id\":\"errors4xx\",\"visible\":false}],[\"AWS/ApiGateway\",\"5XXError\",\"ApiName\",\"game-base-service-test\",{\"id\":\"errors5xx\",\"visible\":false}],[\"AWS/ApiGateway\",\"Latency\",\"ApiName\",\"game-base-service-test\",{\"yAxis\":\"right\"}],[\"AWS/ApiGateway\",\"5XXError\",\"ApiName\",\"game-base-service-test\",{\"stat\":\"Sum\",\"yAxis\":\"right\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":6,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Lambda Performance\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Lambda\",\"Duration\",\"FunctionName\",\"",
+       {
+        "Ref": "LambdasCreateBaseFunction6DB88C2C"
+       },
+       "\"],[\"AWS/Lambda\",\"Duration\",\"FunctionName\",\"",
+       {
+        "Ref": "LambdasUpgradeBaseFunctionD0AC144B"
+       },
+       "\"],[\"AWS/Lambda\",\"Duration\",\"FunctionName\",\"",
+       {
+        "Ref": "LambdasMoveBaseFunction8DCC8610"
+       },
+       "\"],[\"AWS/Lambda\",\"Duration\",\"FunctionName\",\"",
+       {
+        "Ref": "LambdasListBasesFunction4B961558"
+       },
+       "\"],[\"AWS/Lambda\",\"Duration\",\"FunctionName\",\"",
+       {
+        "Ref": "LambdasGetBaseDetailsFunctionDE307A6B"
+       },
+       "\"],[\"AWS/Lambda\",\"Duration\",\"FunctionName\",\"",
+       {
+        "Ref": "LambdasCalculateSpawnLocationFunction568C06FE"
+       },
+       "\"],[\"AWS/Lambda\",\"Errors\",\"FunctionName\",\"",
+       {
+        "Ref": "LambdasCreateBaseFunction6DB88C2C"
+       },
+       "\",{\"yAxis\":\"right\"}],[\"AWS/Lambda\",\"Errors\",\"FunctionName\",\"",
+       {
+        "Ref": "LambdasUpgradeBaseFunctionD0AC144B"
+       },
+       "\",{\"yAxis\":\"right\"}],[\"AWS/Lambda\",\"Errors\",\"FunctionName\",\"",
+       {
+        "Ref": "LambdasMoveBaseFunction8DCC8610"
+       },
+       "\",{\"yAxis\":\"right\"}],[\"AWS/Lambda\",\"Errors\",\"FunctionName\",\"",
+       {
+        "Ref": "LambdasListBasesFunction4B961558"
+       },
+       "\",{\"yAxis\":\"right\"}],[\"AWS/Lambda\",\"Errors\",\"FunctionName\",\"",
+       {
+        "Ref": "LambdasGetBaseDetailsFunctionDE307A6B"
+       },
+       "\",{\"yAxis\":\"right\"}],[\"AWS/Lambda\",\"Errors\",\"FunctionName\",\"",
+       {
+        "Ref": "LambdasCalculateSpawnLocationFunction568C06FE"
+       },
+       "\",{\"yAxis\":\"right\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":12,\"y\":6,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Lambda Invocations\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Lambda\",\"Invocations\",\"FunctionName\",\"",
+       {
+        "Ref": "LambdasCreateBaseFunction6DB88C2C"
+       },
+       "\"],[\"AWS/Lambda\",\"Invocations\",\"FunctionName\",\"",
+       {
+        "Ref": "LambdasUpgradeBaseFunctionD0AC144B"
+       },
+       "\"],[\"AWS/Lambda\",\"Invocations\",\"FunctionName\",\"",
+       {
+        "Ref": "LambdasMoveBaseFunction8DCC8610"
+       },
+       "\"],[\"AWS/Lambda\",\"Invocations\",\"FunctionName\",\"",
+       {
+        "Ref": "LambdasListBasesFunction4B961558"
+       },
+       "\"],[\"AWS/Lambda\",\"Invocations\",\"FunctionName\",\"",
+       {
+        "Ref": "LambdasGetBaseDetailsFunctionDE307A6B"
+       },
+       "\"],[\"AWS/Lambda\",\"Invocations\",\"FunctionName\",\"",
+       {
+        "Ref": "LambdasCalculateSpawnLocationFunction568C06FE"
+       },
+       "\"],[\"AWS/Lambda\",\"Throttles\",\"FunctionName\",\"",
+       {
+        "Ref": "LambdasCreateBaseFunction6DB88C2C"
+       },
+       "\",{\"yAxis\":\"right\"}],[\"AWS/Lambda\",\"Throttles\",\"FunctionName\",\"",
+       {
+        "Ref": "LambdasUpgradeBaseFunctionD0AC144B"
+       },
+       "\",{\"yAxis\":\"right\"}],[\"AWS/Lambda\",\"Throttles\",\"FunctionName\",\"",
+       {
+        "Ref": "LambdasMoveBaseFunction8DCC8610"
+       },
+       "\",{\"yAxis\":\"right\"}],[\"AWS/Lambda\",\"Throttles\",\"FunctionName\",\"",
+       {
+        "Ref": "LambdasListBasesFunction4B961558"
+       },
+       "\",{\"yAxis\":\"right\"}],[\"AWS/Lambda\",\"Throttles\",\"FunctionName\",\"",
+       {
+        "Ref": "LambdasGetBaseDetailsFunctionDE307A6B"
+       },
+       "\",{\"yAxis\":\"right\"}],[\"AWS/Lambda\",\"Throttles\",\"FunctionName\",\"",
+       {
+        "Ref": "LambdasCalculateSpawnLocationFunction568C06FE"
+       },
+       "\",{\"yAxis\":\"right\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":12,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Base Creation Activity\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"GameBaseService/Business\",\"BaseCreated\",\"Environment\",\"test\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":12,\"y\":12,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Base Operations\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"GameBaseService/Business\",\"BaseUpgraded\",\"Environment\",\"test\",{\"stat\":\"Sum\"}],[\"GameBaseService/Business\",\"BaseMoved\",\"Environment\",\"test\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}}]}"
+      ]
+     ]
+    },
+    "DashboardName": "GameBaseService-test"
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Monitoring/ServiceDashboard/Resource"
+   }
+  },
+  "MonitoringLambdaErrorAlarm020969C8B": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "MonitoringAlertTopicB48B06C2"
+     }
+    ],
+    "AlarmDescription": {
+     "Fn::Join": [
+      "",
+      [
+       "High error rate for ",
+       {
+        "Ref": "LambdasCreateBaseFunction6DB88C2C"
+       }
+      ]
+     ]
+    },
+    "AlarmName": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "LambdasCreateBaseFunction6DB88C2C"
+       },
+       "-error-rate"
+      ]
+     ]
+    },
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Ref": "LambdasCreateBaseFunction6DB88C2C"
+      }
+     }
+    ],
+    "EvaluationPeriods": 2,
+    "MetricName": "Errors",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 0.05,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Monitoring/LambdaErrorAlarm0/Resource"
+   }
+  },
+  "MonitoringLambdaDurationAlarm0802C04A1": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "MonitoringAlertTopicB48B06C2"
+     }
+    ],
+    "AlarmDescription": {
+     "Fn::Join": [
+      "",
+      [
+       "High duration for ",
+       {
+        "Ref": "LambdasCreateBaseFunction6DB88C2C"
+       }
+      ]
+     ]
+    },
+    "AlarmName": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "LambdasCreateBaseFunction6DB88C2C"
+       },
+       "-high-duration"
+      ]
+     ]
+    },
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Ref": "LambdasCreateBaseFunction6DB88C2C"
+      }
+     }
+    ],
+    "EvaluationPeriods": 3,
+    "MetricName": "Duration",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 3000,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Monitoring/LambdaDurationAlarm0/Resource"
+   }
+  },
+  "MonitoringLambdaErrorAlarm1723B986F": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "MonitoringAlertTopicB48B06C2"
+     }
+    ],
+    "AlarmDescription": {
+     "Fn::Join": [
+      "",
+      [
+       "High error rate for ",
+       {
+        "Ref": "LambdasUpgradeBaseFunctionD0AC144B"
+       }
+      ]
+     ]
+    },
+    "AlarmName": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "LambdasUpgradeBaseFunctionD0AC144B"
+       },
+       "-error-rate"
+      ]
+     ]
+    },
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Ref": "LambdasUpgradeBaseFunctionD0AC144B"
+      }
+     }
+    ],
+    "EvaluationPeriods": 2,
+    "MetricName": "Errors",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 0.05,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Monitoring/LambdaErrorAlarm1/Resource"
+   }
+  },
+  "MonitoringLambdaDurationAlarm18E754380": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "MonitoringAlertTopicB48B06C2"
+     }
+    ],
+    "AlarmDescription": {
+     "Fn::Join": [
+      "",
+      [
+       "High duration for ",
+       {
+        "Ref": "LambdasUpgradeBaseFunctionD0AC144B"
+       }
+      ]
+     ]
+    },
+    "AlarmName": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "LambdasUpgradeBaseFunctionD0AC144B"
+       },
+       "-high-duration"
+      ]
+     ]
+    },
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Ref": "LambdasUpgradeBaseFunctionD0AC144B"
+      }
+     }
+    ],
+    "EvaluationPeriods": 3,
+    "MetricName": "Duration",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 3000,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Monitoring/LambdaDurationAlarm1/Resource"
+   }
+  },
+  "MonitoringLambdaErrorAlarm2CF5138A8": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "MonitoringAlertTopicB48B06C2"
+     }
+    ],
+    "AlarmDescription": {
+     "Fn::Join": [
+      "",
+      [
+       "High error rate for ",
+       {
+        "Ref": "LambdasMoveBaseFunction8DCC8610"
+       }
+      ]
+     ]
+    },
+    "AlarmName": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "LambdasMoveBaseFunction8DCC8610"
+       },
+       "-error-rate"
+      ]
+     ]
+    },
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Ref": "LambdasMoveBaseFunction8DCC8610"
+      }
+     }
+    ],
+    "EvaluationPeriods": 2,
+    "MetricName": "Errors",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 0.05,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Monitoring/LambdaErrorAlarm2/Resource"
+   }
+  },
+  "MonitoringLambdaDurationAlarm20E3D6216": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "MonitoringAlertTopicB48B06C2"
+     }
+    ],
+    "AlarmDescription": {
+     "Fn::Join": [
+      "",
+      [
+       "High duration for ",
+       {
+        "Ref": "LambdasMoveBaseFunction8DCC8610"
+       }
+      ]
+     ]
+    },
+    "AlarmName": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "LambdasMoveBaseFunction8DCC8610"
+       },
+       "-high-duration"
+      ]
+     ]
+    },
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Ref": "LambdasMoveBaseFunction8DCC8610"
+      }
+     }
+    ],
+    "EvaluationPeriods": 3,
+    "MetricName": "Duration",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 3000,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Monitoring/LambdaDurationAlarm2/Resource"
+   }
+  },
+  "MonitoringLambdaErrorAlarm3C1AD2139": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "MonitoringAlertTopicB48B06C2"
+     }
+    ],
+    "AlarmDescription": {
+     "Fn::Join": [
+      "",
+      [
+       "High error rate for ",
+       {
+        "Ref": "LambdasListBasesFunction4B961558"
+       }
+      ]
+     ]
+    },
+    "AlarmName": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "LambdasListBasesFunction4B961558"
+       },
+       "-error-rate"
+      ]
+     ]
+    },
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Ref": "LambdasListBasesFunction4B961558"
+      }
+     }
+    ],
+    "EvaluationPeriods": 2,
+    "MetricName": "Errors",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 0.05,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Monitoring/LambdaErrorAlarm3/Resource"
+   }
+  },
+  "MonitoringLambdaDurationAlarm32616AF9C": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "MonitoringAlertTopicB48B06C2"
+     }
+    ],
+    "AlarmDescription": {
+     "Fn::Join": [
+      "",
+      [
+       "High duration for ",
+       {
+        "Ref": "LambdasListBasesFunction4B961558"
+       }
+      ]
+     ]
+    },
+    "AlarmName": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "LambdasListBasesFunction4B961558"
+       },
+       "-high-duration"
+      ]
+     ]
+    },
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Ref": "LambdasListBasesFunction4B961558"
+      }
+     }
+    ],
+    "EvaluationPeriods": 3,
+    "MetricName": "Duration",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 3000,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Monitoring/LambdaDurationAlarm3/Resource"
+   }
+  },
+  "MonitoringLambdaErrorAlarm4539F99CC": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "MonitoringAlertTopicB48B06C2"
+     }
+    ],
+    "AlarmDescription": {
+     "Fn::Join": [
+      "",
+      [
+       "High error rate for ",
+       {
+        "Ref": "LambdasGetBaseDetailsFunctionDE307A6B"
+       }
+      ]
+     ]
+    },
+    "AlarmName": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "LambdasGetBaseDetailsFunctionDE307A6B"
+       },
+       "-error-rate"
+      ]
+     ]
+    },
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Ref": "LambdasGetBaseDetailsFunctionDE307A6B"
+      }
+     }
+    ],
+    "EvaluationPeriods": 2,
+    "MetricName": "Errors",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 0.05,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Monitoring/LambdaErrorAlarm4/Resource"
+   }
+  },
+  "MonitoringLambdaDurationAlarm431AF9BE4": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "MonitoringAlertTopicB48B06C2"
+     }
+    ],
+    "AlarmDescription": {
+     "Fn::Join": [
+      "",
+      [
+       "High duration for ",
+       {
+        "Ref": "LambdasGetBaseDetailsFunctionDE307A6B"
+       }
+      ]
+     ]
+    },
+    "AlarmName": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "LambdasGetBaseDetailsFunctionDE307A6B"
+       },
+       "-high-duration"
+      ]
+     ]
+    },
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Ref": "LambdasGetBaseDetailsFunctionDE307A6B"
+      }
+     }
+    ],
+    "EvaluationPeriods": 3,
+    "MetricName": "Duration",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 3000,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Monitoring/LambdaDurationAlarm4/Resource"
+   }
+  },
+  "MonitoringLambdaErrorAlarm552C58F56": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "MonitoringAlertTopicB48B06C2"
+     }
+    ],
+    "AlarmDescription": {
+     "Fn::Join": [
+      "",
+      [
+       "High error rate for ",
+       {
+        "Ref": "LambdasCalculateSpawnLocationFunction568C06FE"
+       }
+      ]
+     ]
+    },
+    "AlarmName": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "LambdasCalculateSpawnLocationFunction568C06FE"
+       },
+       "-error-rate"
+      ]
+     ]
+    },
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Ref": "LambdasCalculateSpawnLocationFunction568C06FE"
+      }
+     }
+    ],
+    "EvaluationPeriods": 2,
+    "MetricName": "Errors",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 0.05,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Monitoring/LambdaErrorAlarm5/Resource"
+   }
+  },
+  "MonitoringLambdaDurationAlarm59A0C212B": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "MonitoringAlertTopicB48B06C2"
+     }
+    ],
+    "AlarmDescription": {
+     "Fn::Join": [
+      "",
+      [
+       "High duration for ",
+       {
+        "Ref": "LambdasCalculateSpawnLocationFunction568C06FE"
+       }
+      ]
+     ]
+    },
+    "AlarmName": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "LambdasCalculateSpawnLocationFunction568C06FE"
+       },
+       "-high-duration"
+      ]
+     ]
+    },
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Ref": "LambdasCalculateSpawnLocationFunction568C06FE"
+      }
+     }
+    ],
+    "EvaluationPeriods": 3,
+    "MetricName": "Duration",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 3000,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Monitoring/LambdaDurationAlarm5/Resource"
+   }
+  },
+  "MonitoringApiGateway5XXAlarmE88B5FB4": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "MonitoringAlertTopicB48B06C2"
+     }
+    ],
+    "AlarmDescription": "High 5XX error rate for API Gateway",
+    "AlarmName": "game-base-service-test-5xx-errors",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "ApiName",
+      "Value": "game-base-service-test"
+     }
+    ],
+    "EvaluationPeriods": 2,
+    "MetricName": "5XXError",
+    "Namespace": "AWS/ApiGateway",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 5
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Monitoring/ApiGateway5XXAlarm/Resource"
+   }
+  },
+  "MonitoringApiGatewayLatencyAlarmCF60BAA6": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "MonitoringAlertTopicB48B06C2"
+     }
+    ],
+    "AlarmDescription": "High latency for API Gateway",
+    "AlarmName": "game-base-service-test-high-latency",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "ApiName",
+      "Value": "game-base-service-test"
+     }
+    ],
+    "EvaluationPeriods": 3,
+    "MetricName": "Latency",
+    "Namespace": "AWS/ApiGateway",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 3000
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Monitoring/ApiGatewayLatencyAlarm/Resource"
+   }
+  },
+  "MonitoringLowBaseActivityAlarm78913B1A": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "MonitoringAlertTopicB48B06C2"
+     }
+    ],
+    "AlarmDescription": "Unusually low base creation activity",
+    "AlarmName": "low-base-creation-activity",
+    "ComparisonOperator": "LessThanThreshold",
+    "EvaluationPeriods": 2,
+    "MetricName": "BaseCreated",
+    "Namespace": "GameBaseService/Business",
+    "Period": 3600,
+    "Statistic": "Sum",
+    "Threshold": 1,
+    "TreatMissingData": "breaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Monitoring/LowBaseActivityAlarm/Resource"
+   }
+  },
+  "MonitoringServiceBudget983E3C63": {
+   "Type": "AWS::Budgets::Budget",
+   "Properties": {
+    "Budget": {
+     "BudgetLimit": {
+      "Amount": 50,
+      "Unit": "USD"
+     },
+     "BudgetName": "game-base-service-test-budget",
+     "BudgetType": "COST",
+     "CostFilters": {
+      "Service": [
+       "Amazon API Gateway",
+       "AWS Lambda",
+       "Amazon DynamoDB"
+      ]
+     },
+     "TimeUnit": "MONTHLY"
+    },
+    "NotificationsWithSubscribers": [
+     {
+      "Notification": {
+       "ComparisonOperator": "GREATER_THAN",
+       "NotificationType": "ACTUAL",
+       "Threshold": 80
+      },
+      "Subscribers": [
+       {
+        "Address": {
+         "Ref": "MonitoringAlertTopicB48B06C2"
+        },
+        "SubscriptionType": "SNS"
+       }
+      ]
+     },
+     {
+      "Notification": {
+       "ComparisonOperator": "GREATER_THAN",
+       "NotificationType": "FORECASTED",
+       "Threshold": 100
+      },
+      "Subscribers": [
+       {
+        "Address": {
+         "Ref": "MonitoringAlertTopicB48B06C2"
+        },
+        "SubscriptionType": "SNS"
+       }
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/Monitoring/ServiceBudget"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WRS27jMAyGz9K9orbOCZIU7aaPgVvMNqAlxlEiix6TahAIuvtActq0K34kf/GlRjf3jb67gRMvjD0uvOt0ehcwRwUn3iZ7DjCQ7XT6gM6j2uxChaw8DJ2FbSCLB9av1TzGYMRRUA4GnVqaH1T7h7wz5+LOlBUvt8CMwnpVjOKlXkdzRFkD46W8Tptd+K5aHuM0OGZHIStPPev0TH2LgqEqnql/miiORfrFWcHoehA8wVmnFllWo6tzXXFlDMUg6gFHT+cBg5ToD+9doK/LzNAiU5wM1lFfUPZkS/JCX9lLk5lfyKKvogot/ovI8he8syA0zdrfsaw4sE4fNDpTL18gK+Mp2hOI2ev0ALzvCKba/uqsPExDXaxAVl20fbn0ZhfWFfN1yHr9spYL/a+JN7vwFmWMklX5ZX3g28+m0fdLfXdzYOcWUwziBtTtbP8D3Y4K+UwCAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "GameBaseService-test/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "ApisGameBaseServiceApiEndpointDC2DA731": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "ApisGameBaseServiceApi9B207532"
+      },
+      ".execute-api.eu-north-1.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "ApisGameBaseServiceApiDeploymentStagetestC12A5D04"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "ApiEndpoint": {
+   "Description": "Game Base Service API endpoint",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "ApisGameBaseServiceApi9B207532"
+      },
+      ".execute-api.eu-north-1.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "ApisGameBaseServiceApiDeploymentStagetestC12A5D04"
+      },
+      "/"
+     ]
+    ]
+   },
+   "Export": {
+    "Name": "GameBaseService-test-ApiEndpoint"
+   }
+  },
+  "PlayerBasesTableName": {
+   "Description": "Player Bases DynamoDB table name",
+   "Value": {
+    "Ref": "TablesPlayerBasesTableDB9471C6"
+   },
+   "Export": {
+    "Name": "GameBaseService-test-PlayerBasesTable"
+   }
+  },
+  "BaseTemplatesTableName": {
+   "Description": "Base Templates DynamoDB table name",
+   "Value": {
+    "Ref": "TablesBaseTemplatesTableE76BB3BA"
+   },
+   "Export": {
+    "Name": "GameBaseService-test-BaseTemplatesTable"
+   }
+  },
+  "SpawnLocationsTableName": {
+   "Description": "Spawn Locations DynamoDB table name",
+   "Value": {
+    "Ref": "TablesSpawnLocationsTableC156BF2E"
+   },
+   "Export": {
+    "Name": "GameBaseService-test-SpawnLocationsTable"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

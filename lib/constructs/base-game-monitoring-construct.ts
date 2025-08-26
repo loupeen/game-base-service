@@ -164,19 +164,19 @@ export class BaseGameMonitoringConstruct extends Construct {
       }),
 
       successRate: new cloudwatch.MathExpression({
-        expression: '100 - (4XX + 5XX) / Count * 100',
+        expression: '100 - (errors4xx + errors5xx) / totalCount * 100',
         usingMetrics: {
-          'Count': new cloudwatch.Metric({
+          'totalCount': new cloudwatch.Metric({
             namespace: 'AWS/ApiGateway',
             metricName: 'Count',
             dimensionsMap: { ApiName: apiName }
           }),
-          '4XX': new cloudwatch.Metric({
+          'errors4xx': new cloudwatch.Metric({
             namespace: 'AWS/ApiGateway',
             metricName: '4XXError',
             dimensionsMap: { ApiName: apiName }
           }),
-          '5XX': new cloudwatch.Metric({
+          'errors5xx': new cloudwatch.Metric({
             namespace: 'AWS/ApiGateway',
             metricName: '5XXError',
             dimensionsMap: { ApiName: apiName }

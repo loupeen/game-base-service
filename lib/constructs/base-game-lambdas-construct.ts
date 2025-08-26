@@ -52,7 +52,7 @@ export class BaseGameLambdasConstruct extends Construct {
     // Common Lambda configuration following cost optimization patterns
     const commonLambdaProps = {
       runtime: lambda.Runtime.NODEJS_18_X,
-      architecture: lambda.Architecture.ARM_64, // 20% cost savings
+      architecture: lambda.Architecture.X86_64, // Temporary: ARM64 causing Docker platform issues in CI
       timeout: cdk.Duration.seconds(config.lambda.timeout),
       memorySize: config.lambda.memorySize,
       environment: {
