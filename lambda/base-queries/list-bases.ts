@@ -4,15 +4,12 @@ import { DynamoDBDocumentClient, QueryCommand } from '@aws-sdk/lib-dynamodb';
 import { 
   StructuredLogger, 
   GameEngineError,
-  withErrorHandling,
-  validateRequest 
+  withErrorHandling
 } from '../../lib/shared-mocks';
 import { z } from 'zod';
 import { 
-  ListBasesRequest, 
   BaseSummary, 
-  EnrichedPlayerBase,
-  QueryResult 
+  EnrichedPlayerBase
 } from '../types/game-base-types';
 
 const dynamoClient = new DynamoDBClient({});
@@ -97,12 +94,12 @@ export const handler = async (
 };
 
 function extractListBasesRequest(event: APIGatewayProxyEvent): ListBasesRequestInput {
-  const queryParams = event.queryStringParameters || {};
-  const pathParams = event.pathParameters || {};
+  const queryParams = event.queryStringParameters ?? {};
+  const pathParams = event.pathParameters ?? {};
   
   return {
     playerId: (pathParams.playerId ?? queryParams.playerId) ?? '',
-    status: (queryParams.status as any) ?? 'all',
+    status: (queryParams.status as 'active' | 'building' | 'moving' | 'destroyed' | 'all') ?? 'all',
     limit: queryParams.limit ? parseInt(queryParams.limit) : 20,
     lastEvaluatedKey: queryParams.lastEvaluatedKey,
     includeStats: queryParams.includeStats !== 'false'
@@ -117,7 +114,7 @@ async function getPlayerBases(request: ListBasesRequestInput): Promise<{
     const keyConditionExpression = 'playerId = :playerId';
     let filterExpression: string | undefined;
     
-    const expressionAttributeValues: Record<string, any> = {
+    const expressionAttributeValues: Record<string, unknown> = {
       ':playerId': request.playerId
     };
 
@@ -146,7 +143,7 @@ async function getPlayerBases(request: ListBasesRequestInput): Promise<{
       Limit: request.limit,
       ExclusiveStartKey: request.lastEvaluatedKey ? JSON.parse(
         Buffer.from(request.lastEvaluatedKey, 'base64').toString()
-      ) : undefined,
+      ) as Record<string, unknown> : undefined,
       ScanIndexForward: false // Most recent bases first
     });
 

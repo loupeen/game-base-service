@@ -106,14 +106,14 @@ async function calculateOptimalSpawnLocation(
     const populationAnalysis = await analyzePopulationDensity();
     
     // Generate candidate spawn locations
-    const candidates = await generateSpawnCandidates(
+    const candidates = generateSpawnCandidates(
       request.preferredRegion,
       friendLocations,
       populationAnalysis
     );
 
     // Score and rank candidates
-    const scoredCandidates = await scoreSpawnCandidates(candidates, friendLocations);
+    const scoredCandidates = scoreSpawnCandidates(candidates, friendLocations);
     
     // Select the best candidate
     const bestCandidate = selectOptimalSpawn(scoredCandidates, request);
@@ -151,7 +151,7 @@ async function getFriendLocations(friendIds: string[]): Promise<{ x: number; y: 
       const response = await docClient.send(command);
       
       if (response.Items && response.Items.length > 0) {
-        locations.push(response.Items[0].coordinates);
+        locations.push(response.Items[0].coordinates as { x: number; y: number });
       }
     }
 
@@ -184,7 +184,7 @@ async function analyzePopulationDensity(): Promise<Map<string, number>> {
     
     // Count bases per map section
     response.Items?.forEach(item => {
-      const sectionId = item.mapSectionId;
+      const sectionId = item.mapSectionId as string;
       densityMap.set(sectionId, (densityMap.get(sectionId) ?? 0) + 1);
     });
 
@@ -196,11 +196,11 @@ async function analyzePopulationDensity(): Promise<Map<string, number>> {
   }
 }
 
-async function generateSpawnCandidates(
+function generateSpawnCandidates(
   preferredRegion: string,
   friendLocations: { x: number; y: number }[],
-  populationDensity: Map<string, number>
-): Promise<{ x: number; y: number; sectionId: string }[]> {
+  _populationDensity: Map<string, number>
+): { x: number; y: number; sectionId: string }[] {
   const candidates: { x: number; y: number; sectionId: string }[] = [];
   const maxCandidates = 20;
   
@@ -279,17 +279,17 @@ function isWithinBounds(
          point.y >= bounds.minY && point.y <= bounds.maxY;
 }
 
-async function scoreSpawnCandidates(
+function scoreSpawnCandidates(
   candidates: { x: number; y: number; sectionId: string }[],
   friendLocations: { x: number; y: number }[]
-): Promise<Array<{ 
+): Array<{ 
   coordinates: { x: number; y: number };
   score: number;
   populationDensity: number;
   safetyRating: number;
   resourceAccessibility: number;
   friendProximity: number;
-}>> {
+}> {
   const scoredCandidates = candidates.map(candidate => {
     // Calculate population density score (lower density = higher score)
     const populationDensity = 0.1; // Simplified - would query actual density
@@ -341,7 +341,7 @@ function selectOptimalSpawn(
     resourceAccessibility: number;
     friendProximity: number;
   }>,
-  request: CalculateSpawnLocationRequest
+  _request: CalculateSpawnLocationRequest
 ): SpawnLocation {
   const bestCandidate = scoredCandidates[0];
   

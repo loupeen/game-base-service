@@ -77,12 +77,6 @@ export interface CreateBaseRequest {
   allianceId?: string;
 }
 
-export interface UpgradeBaseRequest {
-  playerId: string;
-  baseId: string;
-  instant?: boolean;
-}
-
 export interface MoveBaseRequest {
   playerId: string;
   baseId: string;

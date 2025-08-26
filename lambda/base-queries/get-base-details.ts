@@ -196,17 +196,17 @@ async function getActiveUpgrades(playerId: string, baseId: string): Promise<unkn
 
     const response = await docClient.send(command);
     
-    return (response.Items || []).map(upgrade => ({
+    return (response.Items ?? []).map(upgrade => ({
       ...upgrade,
       
       // Timing information
-      completesIn: Math.max(0, upgrade.completionTime - Date.now()),
-      completesAt: new Date(upgrade.completionTime).toISOString(),
-      progress: Math.min(1, (Date.now() - upgrade.startedAt) / (upgrade.completionTime - upgrade.startedAt)),
+      completesIn: Math.max(0, (upgrade as Record<string, unknown>).completionTime as number - Date.now()),
+      completesAt: new Date((upgrade as Record<string, unknown>).completionTime as number).toISOString(),
+      progress: Math.min(1, (Date.now() - ((upgrade as Record<string, unknown>).startedAt as number)) / (((upgrade as Record<string, unknown>).completionTime as number) - ((upgrade as Record<string, unknown>).startedAt as number))),
       
       // Upgrade details
-      levelChange: `${upgrade.fromLevel} → ${upgrade.toLevel}`,
-      timeRemaining: Math.max(0, upgrade.completionTime - Date.now())
+      levelChange: `${String((upgrade as Record<string, unknown>).fromLevel)} → ${String((upgrade as Record<string, unknown>).toLevel)}`,
+      timeRemaining: Math.max(0, (upgrade as Record<string, unknown>).completionTime as number - Date.now())
     }));
 
   } catch (error) {
@@ -219,7 +219,7 @@ async function getActiveUpgrades(playerId: string, baseId: string): Promise<unkn
   }
 }
 
-function calculateBaseMetrics(base: any, activeUpgrades: any[]): any {
+function calculateBaseMetrics(base: PlayerBase, activeUpgrades: unknown[]): Record<string, unknown> {
   const now = Date.now();
   
   return {
@@ -254,31 +254,31 @@ function calculateBaseMetrics(base: any, activeUpgrades: any[]): any {
 }
 
 // Calculation helper functions
-function calculateGoldProduction(base: any): number {
+function calculateGoldProduction(base: PlayerBase): number {
   const baseProduction = base.stats?.production ?? 0;
   const levelMultiplier = 1 + (base.level * 0.1);
   return Math.floor(baseProduction * levelMultiplier * 0.4); // 40% of production goes to gold
 }
 
-function calculateFoodProduction(base: any): number {
+function calculateFoodProduction(base: PlayerBase): number {
   const baseProduction = base.stats?.production ?? 0;
   const levelMultiplier = 1 + (base.level * 0.1);
   return Math.floor(baseProduction * levelMultiplier * 0.3); // 30% to food
 }
 
-function calculateMaterialsProduction(base: any): number {
+function calculateMaterialsProduction(base: PlayerBase): number {
   const baseProduction = base.stats?.production ?? 0;
   const levelMultiplier = 1 + (base.level * 0.1);
   return Math.floor(baseProduction * levelMultiplier * 0.2); // 20% to materials
 }
 
-function calculateEnergyProduction(base: any): number {
+function calculateEnergyProduction(base: PlayerBase): number {
   const baseProduction = base.stats?.production ?? 0;
   const levelMultiplier = 1 + (base.level * 0.1);
   return Math.floor(baseProduction * levelMultiplier * 0.1); // 10% to energy
 }
 
-function calculateDefenseRating(base: any): string {
+function calculateDefenseRating(base: PlayerBase): string {
   const defense = base.stats?.defense ?? 0;
   if (defense < 50) return 'Weak';
   if (defense < 150) return 'Moderate';
@@ -287,7 +287,7 @@ function calculateDefenseRating(base: any): string {
   return 'Impenetrable';
 }
 
-function calculateBaseScore(base: any): number {
+function calculateBaseScore(base: PlayerBase): number {
   const level = base.level || 1;
   const stats = base.stats || {};
   const defense = stats.defense ?? 0;
@@ -297,31 +297,31 @@ function calculateBaseScore(base: any): number {
   return Math.floor((level * 100) + (defense * 0.5) + (production * 2) + (storage * 0.1));
 }
 
-function calculateProductionEfficiency(base: any): number {
+function calculateProductionEfficiency(base: PlayerBase): number {
   const expectedProduction = base.level * 50; // Expected production per level
   const actualProduction = base.stats?.production ?? 0;
   return Math.min(1, actualProduction / expectedProduction);
 }
 
-function calculateDefenseEfficiency(base: any): number {
+function calculateDefenseEfficiency(base: PlayerBase): number {
   const expectedDefense = base.level * 30; // Expected defense per level
   const actualDefense = base.stats?.defense ?? 0;
   return Math.min(1, actualDefense / expectedDefense);
 }
 
-function calculateStorageEfficiency(base: any): number {
+function calculateStorageEfficiency(base: PlayerBase): number {
   const expectedStorage = base.level * 200; // Expected storage per level
   const actualStorage = base.stats?.storage ?? 0;
   return Math.min(1, actualStorage / expectedStorage);
 }
 
-function calculateTerritoryValue(base: any): number {
+function calculateTerritoryValue(base: PlayerBase): number {
   // Simple territory value based on coordinates (closer to center = higher value)
   const distanceFromCenter = Math.sqrt(base.coordinates.x ** 2 + base.coordinates.y ** 2);
   return Math.max(0.1, 1 - (distanceFromCenter / 10000));
 }
 
-function calculateDefensivePosition(base: any): string {
+function calculateDefensivePosition(base: PlayerBase): string {
   const x = Math.abs(base.coordinates.x);
   const y = Math.abs(base.coordinates.y);
   
@@ -330,13 +330,13 @@ function calculateDefensivePosition(base: any): string {
   return 'Standard Position';
 }
 
-function calculateResourceAccessibility(base: any): number {
+function calculateResourceAccessibility(_base: PlayerBase): number {
   // Simplified calculation based on map position
   // TODO: Integrate with actual resource node locations
   return Math.random() * 0.4 + 0.6; // Random between 0.6-1.0 for now
 }
 
-function generateRecommendations(base: any, activeUpgrades: any[]): string[] {
+function generateRecommendations(base: PlayerBase, activeUpgrades: unknown[]): string[] {
   const recommendations: string[] = [];
   
   if (base.level < 5) {
