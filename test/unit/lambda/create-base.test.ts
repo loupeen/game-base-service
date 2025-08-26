@@ -123,7 +123,7 @@ describe('Create Base Lambda', () => {
       
       const body = JSON.parse(result.body);
       expect(body.success).toBe(false);
-      expect(body.error.code).toBe('BASE_LIMIT_REACHED');
+      expect(body.error.code).toBe('BASE_LIMIT_EXCEEDED');
     });
 
     it('should allow premium players to create more bases', async () => {

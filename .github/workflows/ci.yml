@@ -115,7 +115,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ env.AWS_REGION_TEST }}
-          role-to-assume: arn:aws:iam::728427470046:role/GitHubActionsRole-GameBaseService
+          role-to-assume: arn:aws:iam::728427470046:role/GitHubActionsDeploymentRole
           role-session-name: GitHubActions-GameBaseService-Test
 
       - name: Run integration tests
@@ -150,7 +150,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ env.AWS_REGION_TEST }}
-          role-to-assume: arn:aws:iam::728427470046:role/GitHubActionsRole-GameBaseService
+          role-to-assume: arn:aws:iam::728427470046:role/GitHubActionsDeploymentRole
           role-session-name: GitHubActions-GameBaseService-Deploy-Test
 
       - name: Deploy to test environment
@@ -199,7 +199,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ env.AWS_REGION_QA }}
-          role-to-assume: arn:aws:iam::077029784291:role/GitHubActionsRole-GameBaseService
+          role-to-assume: arn:aws:iam::077029784291:role/GitHubActionsDeploymentRole
           role-session-name: GitHubActions-GameBaseService-Deploy-QA
 
       - name: Deploy to QA environment

@@ -30,6 +30,27 @@ export const mockBaseTemplate = {
   buildTime: 300000 // 5 minutes
 };
 
+export const mockUpgradeTemplate = {
+  templateId: 'command_center-level-2',
+  baseType: 'command_center',
+  level: 2,
+  requirements: {
+    resources: {
+      gold: 2000,
+      food: 1000,
+      materials: 400
+    },
+    playerLevel: 2
+  },
+  stats: {
+    health: 1500,
+    defense: 150,
+    production: 75,
+    storage: 1500
+  },
+  buildTime: 600 // 10 minutes
+};
+
 export const mockPlayerBase = {
   playerId: TEST_PLAYER_ID,
   baseId: TEST_BASE_ID,

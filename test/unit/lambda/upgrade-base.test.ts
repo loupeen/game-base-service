@@ -21,6 +21,7 @@ import {
   validUpgradeBaseRequest,
   mockPlayerBase,
   mockBaseUpgrade,
+  mockUpgradeTemplate,
   createMockDynamoDBGetResponse,
   createMockDynamoDBResponse,
   TEST_PLAYER_ID,
@@ -46,6 +47,7 @@ describe('Upgrade Base Lambda', () => {
       
       mockSend
         .mockResolvedValueOnce(createMockDynamoDBGetResponse(mockPlayerBase))  // Get base
+        .mockResolvedValueOnce(createMockDynamoDBGetResponse(mockUpgradeTemplate))  // Get upgrade template
         .mockResolvedValueOnce(createMockDynamoDBResponse([]))  // No active upgrades
         .mockResolvedValueOnce({})  // Create upgrade record
         .mockResolvedValueOnce({});  // Update base status
@@ -79,9 +81,11 @@ describe('Upgrade Base Lambda', () => {
       
       mockSend
         .mockResolvedValueOnce(createMockDynamoDBGetResponse(mockPlayerBase))
-        .mockResolvedValueOnce(createMockDynamoDBResponse([]))
-        .mockResolvedValueOnce({})  // Update base immediately
-        .mockResolvedValueOnce({});  // Create completed upgrade record
+        .mockResolvedValueOnce(createMockDynamoDBGetResponse(mockUpgradeTemplate))  // Get upgrade template
+        .mockResolvedValueOnce(createMockDynamoDBResponse([]))  // No active upgrades
+        .mockResolvedValueOnce({})  // Create upgrade record  
+        .mockResolvedValueOnce({})  // Update upgrade status
+        .mockResolvedValueOnce({});  // Update base stats
 
       const result = await handler(event);
 
