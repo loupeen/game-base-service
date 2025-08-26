@@ -79,13 +79,37 @@ module.exports = [
       'max-lines-per-function': 'off'
     }
   },
+
+  // Jest global setup/teardown files - Node.js environment
+  {
+    files: ['test/global-setup.js', 'test/global-teardown.js'],
+    languageOptions: {
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        Buffer: 'readonly',
+        module: 'readonly',
+        exports: 'readonly',
+        require: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly'
+      }
+    },
+    rules: {
+      'no-console': 'off',
+      'no-undef': 'off'
+    }
+  },
+
   {
     ignores: [
       'node_modules/',
       'lib/',
       'cdk.out/',
       '*.d.ts',
-      '*.js'
+      'babel.config.js',  // Babel configuration
+      'jest.config.js',   // Jest configuration
+      'eslint.config.js'  // ESLint configuration
     ]
   }
 ];
