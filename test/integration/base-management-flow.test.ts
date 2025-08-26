@@ -9,7 +9,7 @@ import { describe, test, expect, beforeAll } from '@jest/globals';
 import axios from 'axios';
 
 // Configuration - will be set from environment or CloudFormation outputs
-const API_BASE_URL = process.env.API_BASE_URL || 'https://placeholder.execute-api.eu-north-1.amazonaws.com/test';
+const API_BASE_URL = process.env.API_BASE_URL ?? 'https://placeholder.execute-api.eu-north-1.amazonaws.com/test';
 const TEST_PLAYER_ID = `integration-test-${Date.now()}`;
 
 interface CreateBaseRequest {
