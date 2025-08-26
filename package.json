@@ -16,6 +16,7 @@
     "test:qa": "TEST_ENV=qa npm run test:integration",
     "test:all": "npm run test:unit && npm run test:integration",
     "lint": "eslint . --ext .ts,.js",
+    "lint:ci": "eslint . --ext .ts,.js --max-warnings 20",
     "lint:fix": "eslint . --ext .ts,.js --fix",
     "typecheck": "tsc --noEmit",
     "quality": "npm run lint && npm run typecheck && npm run test:coverage",
