@@ -95,8 +95,8 @@ function extractListBasesRequest(event: APIGatewayProxyEvent): ListBasesRequest 
   const pathParams = event.pathParameters || {};
   
   return {
-    playerId: pathParams.playerId || queryParams.playerId ?? '',
-    status: (queryParams.status as any) || 'all',
+    playerId: (pathParams.playerId ?? queryParams.playerId) ?? '',
+    status: (queryParams.status as any) ?? 'all',
     limit: queryParams.limit ? parseInt(queryParams.limit) : 20,
     lastEvaluatedKey: queryParams.lastEvaluatedKey,
     includeStats: queryParams.includeStats !== 'false'
