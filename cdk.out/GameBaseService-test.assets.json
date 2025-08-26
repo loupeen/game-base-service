@@ -106,16 +106,16 @@
         }
       }
     },
-    "fb39c4b547673fdc11b53d9dbc2f3b6bb12fa9c554b3108bfc0de057f4399251": {
+    "8718aacc13110da9e0cb872ac75bf82621a51d8ba99194cc8b43b729fd8030b6": {
       "displayName": "GameBaseService-test Template",
       "source": {
         "path": "GameBaseService-test.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "728427470046-eu-north-1-a4dba444": {
+        "728427470046-eu-north-1-9382a609": {
           "bucketName": "cdk-hnb659fds-assets-728427470046-eu-north-1",
-          "objectKey": "fb39c4b547673fdc11b53d9dbc2f3b6bb12fa9c554b3108bfc0de057f4399251.json",
+          "objectKey": "8718aacc13110da9e0cb872ac75bf82621a51d8ba99194cc8b43b729fd8030b6.json",
           "region": "eu-north-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::728427470046:role/cdk-hnb659fds-file-publishing-role-728427470046-eu-north-1"
         }

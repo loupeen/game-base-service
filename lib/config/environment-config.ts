@@ -80,7 +80,7 @@ export function getGameBaseServiceConfig(environment: string): GameBaseServiceCo
     lambda: {
       memorySize: environment === 'production' ? 1024 : 512,
       timeout: 30,
-      architecture: 'ARM_64', // 20% cost savings
+      architecture: 'X86_64', // ARM64 causing Docker platform issues in CI
       runtime: 'nodejs18.x'
     },
     
@@ -101,7 +101,7 @@ export function getGameBaseServiceConfig(environment: string): GameBaseServiceCo
     
     costs: {
       monthlyBudgetUsd: getBudgetForEnvironment(environment),
-      enableCostAlerts: true
+      enableCostAlerts: environment === 'production' // Only enable in production for now
     }
   };
   

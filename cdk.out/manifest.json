@@ -27,7 +27,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::728427470046:role/cdk-hnb659fds-deploy-role-728427470046-eu-north-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::728427470046:role/cdk-hnb659fds-cfn-exec-role-728427470046-eu-north-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-728427470046-eu-north-1/fb39c4b547673fdc11b53d9dbc2f3b6bb12fa9c554b3108bfc0de057f4399251.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-728427470046-eu-north-1/8718aacc13110da9e0cb872ac75bf82621a51d8ba99194cc8b43b729fd8030b6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -757,12 +757,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MonitoringLowBaseActivityAlarm78913B1A"
-          }
-        ],
-        "/GameBaseService-test/Monitoring/ServiceBudget": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MonitoringServiceBudget983E3C63"
           }
         ],
         "/GameBaseService-test/ApiEndpoint": [

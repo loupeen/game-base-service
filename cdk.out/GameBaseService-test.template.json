@@ -4521,66 +4521,10 @@
     "aws:cdk:path": "GameBaseService-test/Monitoring/LowBaseActivityAlarm/Resource"
    }
   },
-  "MonitoringServiceBudget983E3C63": {
-   "Type": "AWS::Budgets::Budget",
-   "Properties": {
-    "Budget": {
-     "BudgetLimit": {
-      "Amount": 50,
-      "Unit": "USD"
-     },
-     "BudgetName": "game-base-service-test-budget",
-     "BudgetType": "COST",
-     "CostFilters": {
-      "Service": [
-       "Amazon API Gateway",
-       "AWS Lambda",
-       "Amazon DynamoDB"
-      ]
-     },
-     "TimeUnit": "MONTHLY"
-    },
-    "NotificationsWithSubscribers": [
-     {
-      "Notification": {
-       "ComparisonOperator": "GREATER_THAN",
-       "NotificationType": "ACTUAL",
-       "Threshold": 80
-      },
-      "Subscribers": [
-       {
-        "Address": {
-         "Ref": "MonitoringAlertTopicB48B06C2"
-        },
-        "SubscriptionType": "SNS"
-       }
-      ]
-     },
-     {
-      "Notification": {
-       "ComparisonOperator": "GREATER_THAN",
-       "NotificationType": "FORECASTED",
-       "Threshold": 100
-      },
-      "Subscribers": [
-       {
-        "Address": {
-         "Ref": "MonitoringAlertTopicB48B06C2"
-        },
-        "SubscriptionType": "SNS"
-       }
-      ]
-     }
-    ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "GameBaseService-test/Monitoring/ServiceBudget"
-   }
-  },
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WRS27jMAyGz9K9orbOCZIU7aaPgVvMNqAlxlEiix6TahAIuvtActq0K34kf/GlRjf3jb67gRMvjD0uvOt0ehcwRwUn3iZ7DjCQ7XT6gM6j2uxChaw8DJ2FbSCLB9av1TzGYMRRUA4GnVqaH1T7h7wz5+LOlBUvt8CMwnpVjOKlXkdzRFkD46W8Tptd+K5aHuM0OGZHIStPPev0TH2LgqEqnql/miiORfrFWcHoehA8wVmnFllWo6tzXXFlDMUg6gFHT+cBg5ToD+9doK/LzNAiU5wM1lFfUPZkS/JCX9lLk5lfyKKvogot/ovI8he8syA0zdrfsaw4sE4fNDpTL18gK+Mp2hOI2ev0ALzvCKba/uqsPExDXaxAVl20fbn0ZhfWFfN1yHr9spYL/a+JN7vwFmWMklX5ZX3g28+m0fdLfXdzYOcWUwziBtTtbP8D3Y4K+UwCAAA="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WRzW7bMAzHn6V3RWudJ0hSrJd0K9xg14CWGEeJLLomtSAQ9O6D5HRpT/yR/ItfanTz1OjHB7jwwtjzwrtOp3cBc1Zw4X2y1wAD2U6nHXQe1eYQKmTlYegs7ANZPLH+Vc3PGIw4CsrBoFNL84Nq38g7cy3uTFnxcg/MKKxXxShe6nU0Z5Q1MN7K67Q5hP9Vy2OcBsfsKGTlqWedttS3KBiqYkv9y0RxLNJPzgpG14PgBa46tciyGl2d644rYygGUc84eroOGKREv3jvAn1dZoYWmeJksI76inIkW5I3+szemsz8ShZ9FVVo8SMiyx/wzoLQNGu/x7LiwDrtaHSmXr5AVsZTtBcQc9TpGfjYEUy1/d1ZeZiGuliBnO8j1VuXJVzov823OYTfUcYoWZU/1Sf+8bdp9NNSPz6c2LnFFIO4AXU723+Fp9RPOgIAAA=="
    },
    "Metadata": {
     "aws:cdk:path": "GameBaseService-test/CDKMetadata/Default"
