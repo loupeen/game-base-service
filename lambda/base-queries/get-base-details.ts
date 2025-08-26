@@ -6,6 +6,13 @@ import {
   GameEngineError,
   withErrorHandling 
 } from '../../lib/shared-mocks';
+import { 
+  PlayerBase, 
+  BaseTemplate,
+  BaseNeighbor,
+  EnrichedPlayerBase,
+  GetBaseDetailsRequest 
+} from '../types/game-base-types';
 
 const dynamoClient = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
@@ -86,7 +93,7 @@ export const handler = async (
   }, logger);
 };
 
-async function getBaseDetails(playerId: string, baseId: string): Promise<any> {
+async function getBaseDetails(playerId: string, baseId: string): Promise<EnrichedPlayerBase> {
   try {
     const command = new GetCommand({
       TableName: PLAYER_BASES_TABLE,
@@ -103,7 +110,7 @@ async function getBaseDetails(playerId: string, baseId: string): Promise<any> {
       );
     }
 
-    const base = response.Item;
+    const base = response.Item as PlayerBase;
     
     // Enrich base data with computed fields
     const enrichedBase = {
@@ -161,7 +168,7 @@ async function getBaseDetails(playerId: string, baseId: string): Promise<any> {
       })
     };
 
-    return enrichedBase;
+    return enrichedBase as unknown as EnrichedPlayerBase;
 
   } catch (error) {
     if (error instanceof GameEngineError) throw error;
