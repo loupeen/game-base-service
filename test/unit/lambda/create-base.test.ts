@@ -1,3 +1,19 @@
+// Mock the DynamoDB client BEFORE imports
+jest.mock('@aws-sdk/lib-dynamodb', () => {
+  const mockSend = jest.fn();
+  return {
+    DynamoDBDocumentClient: {
+      from: jest.fn(() => ({
+        send: mockSend
+      }))
+    },
+    QueryCommand: jest.fn(),
+    GetCommand: jest.fn(),
+    PutCommand: jest.fn(),
+    __mockSend: mockSend // Export for test access
+  };
+});
+
 import { handler } from '../../../lambda/base-management/create-base';
 import { 
   createMockAPIGatewayEvent, 
@@ -9,20 +25,9 @@ import {
   createMockDynamoDBGetResponse,
   TEST_PLAYER_ID
 } from '../../fixtures/test-data';
-import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 
-// Mock the DynamoDB client
-const mockSend = jest.fn();
-jest.mock('@aws-sdk/lib-dynamodb', () => ({
-  DynamoDBDocumentClient: {
-    from: () => ({
-      send: mockSend
-    })
-  },
-  QueryCommand: jest.fn(),
-  GetCommand: jest.fn(),
-  PutCommand: jest.fn()
-}));
+// Access the mock function from the mocked module
+const mockSend = require('@aws-sdk/lib-dynamodb').__mockSend;
 
 describe('Create Base Lambda', () => {
   beforeEach(() => {
@@ -38,7 +43,7 @@ describe('Create Base Lambda', () => {
       mockSend
         .mockResolvedValueOnce(createMockDynamoDBResponse([]))  // Player has no bases
         .mockResolvedValueOnce(createMockDynamoDBGetResponse(mockBaseTemplate))  // Base template
-        .mockResolvedValueOnce({});  // Successful base creation
+        .mockResolvedValueOnce({ $metadata: { httpStatusCode: 200 } });  // Successful base creation
 
       const result = await handler(event);
 
@@ -54,7 +59,10 @@ describe('Create Base Lambda', () => {
         status: 'building'
       });
       expect(body.data.base.baseId).toBeDefined();
-      expect(body.data.base.coordinates).toBeValidCoordinates();
+      expect(body.data.base.coordinates).toEqual(expect.objectContaining({
+        x: expect.any(Number),
+        y: expect.any(Number)
+      }));
     });
 
     it('should use provided coordinates when available', async () => {

@@ -10,21 +10,24 @@ export const TEST_BASE_ID = 'base-456';
 export const TEST_ALLIANCE_ID = 'alliance-789';
 
 export const mockBaseTemplate = {
-  baseType: 'command_center',
   templateId: 'template-cmd-center-1',
-  initialStats: {
-    level: 1,
+  baseType: 'command_center',
+  level: 1,
+  requirements: {
+    resources: {
+      gold: 1000,
+      food: 500,
+      materials: 200
+    },
+    playerLevel: 1
+  },
+  stats: {
     health: 1000,
     defense: 100,
     production: 50,
     storage: 1000
   },
-  buildTime: 300000, // 5 minutes
-  cost: {
-    gold: 1000,
-    food: 500,
-    materials: 200
-  }
+  buildTime: 300000 // 5 minutes
 };
 
 export const mockPlayerBase = {

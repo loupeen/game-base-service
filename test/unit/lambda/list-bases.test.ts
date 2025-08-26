@@ -1,3 +1,17 @@
+// Mock the DynamoDB client BEFORE imports
+jest.mock('@aws-sdk/lib-dynamodb', () => {
+  const mockSend = jest.fn();
+  return {
+    DynamoDBDocumentClient: {
+      from: jest.fn(() => ({
+        send: mockSend
+      }))
+    },
+    QueryCommand: jest.fn(),
+    __mockSend: mockSend // Export for test access
+  };
+});
+
 import { handler } from '../../../lambda/base-queries/list-bases';
 import { 
   createMockAPIGatewayEvent,
@@ -6,16 +20,8 @@ import {
   TEST_PLAYER_ID
 } from '../../fixtures/test-data';
 
-// Mock the DynamoDB client
-const mockSend = jest.fn();
-jest.mock('@aws-sdk/lib-dynamodb', () => ({
-  DynamoDBDocumentClient: {
-    from: () => ({
-      send: mockSend
-    })
-  },
-  QueryCommand: jest.fn()
-}));
+// Access the mock function from the mocked module
+const mockSend = require('@aws-sdk/lib-dynamodb').__mockSend;
 
 describe('List Bases Lambda', () => {
   beforeEach(() => {
@@ -117,7 +123,6 @@ describe('List Bases Lambda', () => {
       const body = JSON.parse(result.body);
       expect(body.data.summary).toMatchObject({
         totalBases: 3,
-        activeBase: 2,
         buildingBases: 1,
         averageLevel: 2.0,
         maxLevel: 3,

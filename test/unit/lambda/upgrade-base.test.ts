@@ -1,3 +1,20 @@
+// Mock the DynamoDB client BEFORE imports
+jest.mock('@aws-sdk/lib-dynamodb', () => {
+  const mockSend = jest.fn();
+  return {
+    DynamoDBDocumentClient: {
+      from: jest.fn(() => ({
+        send: mockSend
+      }))
+    },
+    GetCommand: jest.fn(),
+    QueryCommand: jest.fn(),
+    UpdateCommand: jest.fn(),
+    PutCommand: jest.fn(),
+    __mockSend: mockSend // Export for test access
+  };
+});
+
 import { handler } from '../../../lambda/base-management/upgrade-base';
 import { 
   createMockAPIGatewayEvent,
@@ -10,19 +27,8 @@ import {
   TEST_BASE_ID
 } from '../../fixtures/test-data';
 
-// Mock the DynamoDB client
-const mockSend = jest.fn();
-jest.mock('@aws-sdk/lib-dynamodb', () => ({
-  DynamoDBDocumentClient: {
-    from: () => ({
-      send: mockSend
-    })
-  },
-  GetCommand: jest.fn(),
-  QueryCommand: jest.fn(),
-  UpdateCommand: jest.fn(),
-  PutCommand: jest.fn()
-}));
+// Access the mock function from the mocked module
+const mockSend = require('@aws-sdk/lib-dynamodb').__mockSend;
 
 describe('Upgrade Base Lambda', () => {
   beforeEach(() => {
