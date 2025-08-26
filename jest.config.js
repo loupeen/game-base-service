@@ -47,7 +47,7 @@ module.exports = {
   ],
   
   // Module name mapping for shared libraries
-  moduleNameMapping: {
+  moduleNameMapper: {
     '^@loupeen/shared-js-utils$': '<rootDir>/node_modules/@loupeen/shared-js-utils/dist/index.js',
     '^@loupeen/shared-config-library$': '<rootDir>/node_modules/@loupeen/shared-config-library/dist/index.js',
     '^@/(.*)$': '<rootDir>/lib/$1',
@@ -66,8 +66,8 @@ module.exports = {
   },
   
   // Global setup and teardown for integration tests
-  globalSetup: '<rootDir>/test/global-setup.ts',
-  globalTeardown: '<rootDir>/test/global-teardown.ts',
+  globalSetup: '<rootDir>/test/global-setup.js',
+  globalTeardown: '<rootDir>/test/global-teardown.js',
   
   // Test timeout (increased for integration tests)
   testTimeout: 30000,
