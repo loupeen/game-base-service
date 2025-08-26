@@ -70,8 +70,8 @@ module.exports = {
   globalSetup: '<rootDir>/test/global-setup.js',
   globalTeardown: '<rootDir>/test/global-teardown.js',
   
-  // Test timeout (increased for integration tests)
-  testTimeout: 30000,
+  // Test timeout (reduced for faster CI)
+  testTimeout: 5000,
   
   // Verbose output for debugging
   verbose: false,
