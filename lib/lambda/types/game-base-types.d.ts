@@ -78,6 +78,12 @@ export interface MoveBaseRequest {
     coordinates: Coordinates;
     instant?: boolean;
 }
+export interface UpgradeBaseRequest {
+    playerId: string;
+    baseId: string;
+    upgradeType: 'level' | 'defense' | 'storage' | 'production' | 'specialized';
+    instant?: boolean;
+}
 export interface GetBaseDetailsRequest {
     playerId: string;
     baseId: string;

@@ -9,6 +9,12 @@ import {
 } from '../../lib/shared-mocks';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
+import { 
+  PlayerBase, 
+  BaseTemplate, 
+  BaseUpgradeTemplate,
+  UpgradeBaseRequest 
+} from '../types/game-base-types';
 
 const dynamoClient = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
@@ -26,7 +32,7 @@ const UpgradeBaseRequestSchema = z.object({
   skipTime: z.boolean().optional().default(false) // For premium players
 });
 
-type UpgradeBaseRequest = z.infer<typeof UpgradeBaseRequestSchema>;
+type UpgradeBaseRequestInput = z.infer<typeof UpgradeBaseRequestSchema>;
 
 interface BaseUpgrade {
   playerId: string;
@@ -71,7 +77,7 @@ export const handler = async (
       requestId: event.requestContext?.requestId 
     });
 
-    const request = await validateRequest<UpgradeBaseRequest>(UpgradeBaseRequestSchema, event.body);
+    const request = await validateRequest<UpgradeBaseRequestInput>(UpgradeBaseRequestSchema, event.body);
     
     // Get current base state
     const currentBase = await getPlayerBase(request.playerId, request.baseId);
@@ -116,7 +122,7 @@ export const handler = async (
   }, logger);
 };
 
-async function getPlayerBase(playerId: string, baseId: string): Promise<any> {
+async function getPlayerBase(playerId: string, baseId: string): Promise<PlayerBase> {
   try {
     const command = new GetCommand({
       TableName: PLAYER_BASES_TABLE,
@@ -133,15 +139,17 @@ async function getPlayerBase(playerId: string, baseId: string): Promise<any> {
       );
     }
 
-    if (response.Item.status === 'destroyed') {
+    const base = response.Item as PlayerBase;
+    
+    if (base.status === 'destroyed') {
       throw new GameEngineError(
         'Cannot upgrade destroyed base',
         'INVALID_BASE_STATUS',
-        { playerId, baseId, status: response.Item.status }
+        { playerId, baseId, status: base.status }
       );
     }
 
-    return response.Item;
+    return base;
   } catch (error) {
     if (error instanceof GameEngineError) throw error;
     throw new GameEngineError(
@@ -152,7 +160,7 @@ async function getPlayerBase(playerId: string, baseId: string): Promise<any> {
   }
 }
 
-async function validateUpgradeRequirements(base: any, upgradeType: string): Promise<any> {
+async function validateUpgradeRequirements(base: PlayerBase, upgradeType: string): Promise<BaseTemplate> {
   try {
     const nextLevel = base.level + 1;
     const templateId = `${base.baseType}-level-${nextLevel}`;
@@ -172,7 +180,7 @@ async function validateUpgradeRequirements(base: any, upgradeType: string): Prom
       );
     }
 
-    const template = response.Item;
+    const template = response.Item as BaseTemplate;
     
     // TODO: Validate player has required resources
     // This would integrate with resource service
@@ -219,13 +227,13 @@ async function checkActiveUpgrades(playerId: string, baseId: string): Promise<vo
 }
 
 async function createUpgradeRecord(
-  request: UpgradeBaseRequest,
-  base: any,
-  template: any
+  request: UpgradeBaseRequestInput,
+  base: PlayerBase,
+  template: BaseTemplate
 ): Promise<BaseUpgrade> {
   try {
     const now = Date.now();
-    const upgradeTime = template.buildTime || 3600; // Default 1 hour
+    const upgradeTime = template.buildTime ?? 3600; // Default 1 hour
     const completionTime = now + (upgradeTime * 1000);
     
     const upgrade: BaseUpgrade = {
@@ -236,7 +244,7 @@ async function createUpgradeRecord(
       fromLevel: base.level,
       toLevel: base.level + 1,
       requirements: {
-        resources: template.requirements?.resources || {},
+        resources: template.requirements?.resources ?? {},
         time: upgradeTime,
         goldCost: request.skipTime ? calculateInstantUpgradeCost(upgradeTime) : undefined
       },
@@ -266,7 +274,7 @@ async function createUpgradeRecord(
   }
 }
 
-async function completeInstantUpgrade(upgrade: BaseUpgrade, base: any): Promise<void> {
+async function completeInstantUpgrade(upgrade: BaseUpgrade, base: PlayerBase): Promise<void> {
   try {
     const now = Date.now();
     
