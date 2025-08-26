@@ -7,18 +7,20 @@ import { Construct } from 'constructs';
 export declare class StructuredLogger {
     private context;
     constructor(context: string);
-    info(message: string, details?: any): void;
-    warn(message: string, details?: any): void;
-    error(message: string, details?: any): void;
-    debug(message: string, details?: any): void;
+    info(message: string, details?: Record<string, unknown>): void;
+    warn(message: string, details?: Record<string, unknown>): void;
+    error(message: string, details?: Record<string, unknown>): void;
+    debug(message: string, details?: Record<string, unknown>): void;
 }
 export declare class GameEngineError extends Error {
     readonly code: string;
-    readonly details?: any;
-    constructor(message: string, code: string, details?: any);
+    readonly details?: Record<string, unknown>;
+    constructor(message: string, code: string, details?: Record<string, unknown>);
 }
 export declare const withErrorHandling: <T>(handler: () => Promise<T>, logger?: StructuredLogger) => Promise<T>;
-export declare const validateRequest: <T>(schema: any, body: string | null) => Promise<T>;
+export declare const validateRequest: <T>(schema: {
+    parse: (data: unknown) => T;
+}, body: string | null) => Promise<T>;
 export declare const publishCustomMetric: (namespace: string, metricName: string, value: number, dimensions?: Record<string, string>) => Promise<void>;
 export interface GameBaseServiceConfig {
     environment: string;

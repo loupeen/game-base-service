@@ -9,6 +9,12 @@ import {
 } from '../../lib/shared-mocks';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
+import { 
+  BaseTemplate, 
+  PlayerBase, 
+  Coordinates, 
+  SpawnLocation 
+} from '../types/game-base-types';
 
 // Initialize AWS clients following shared patterns
 const dynamoClient = new DynamoDBClient({});
@@ -34,48 +40,7 @@ const CreateBaseRequestSchema = z.object({
   allianceId: z.string().optional()
 });
 
-type CreateBaseRequest = z.infer<typeof CreateBaseRequestSchema>;
-
-interface BaseTemplate {
-  templateId: string;
-  baseType: string;
-  level: number;
-  requirements: {
-    resources: Record<string, number>;
-    playerLevel: number;
-  };
-  stats: {
-    defense: number;
-    storage: number;
-    production: number;
-  };
-  buildTime: number;
-}
-
-interface PlayerBase {
-  playerId: string;
-  baseId: string;
-  baseType: string;
-  baseName: string;
-  level: number;
-  coordinates: {
-    x: number;
-    y: number;
-  };
-  mapSectionId: string;
-  coordinateHash: string;
-  allianceId?: string;
-  status: 'active' | 'building' | 'moving' | 'destroyed';
-  stats: {
-    defense: number;
-    storage: number;
-    production: number;
-  };
-  createdAt: number;
-  lastActiveAt: number;
-  buildCompletionTime?: number;
-  ttl?: number;
-}
+type CreateBaseRequestInput = z.infer<typeof CreateBaseRequestSchema>;
 
 /**
  * Create Base Handler
@@ -104,7 +69,7 @@ export const handler = async (
     });
 
     // Validate request using shared validation patterns
-    const request = await validateRequest<CreateBaseRequest>(CreateBaseRequestSchema, event.body);
+    const request = await validateRequest<CreateBaseRequestInput>(CreateBaseRequestSchema, event.body);
     
     // Check if player can create more bases (subscription limits)
     await validatePlayerBaseLimit(request.playerId);
@@ -226,7 +191,7 @@ async function getBaseTemplate(baseType: string): Promise<BaseTemplate> {
 /**
  * Calculate spawn coordinates for new base
  */
-async function calculateSpawnCoordinates(spawnLocationId?: string): Promise<{ x: number; y: number }> {
+async function calculateSpawnCoordinates(spawnLocationId?: string): Promise<Coordinates> {
   try {
     if (spawnLocationId) {
       // Use specific spawn location
@@ -239,8 +204,9 @@ async function calculateSpawnCoordinates(spawnLocationId?: string): Promise<{ x:
       });
 
       const response = await docClient.send(command);
+      const item = response.Item as SpawnLocation | undefined;
       
-      if (!response.Item?.isAvailable) {
+      if (!item?.isAvailable) {
         throw new GameEngineError(
           'Spawn location not available',
           'SPAWN_LOCATION_UNAVAILABLE',
@@ -249,8 +215,8 @@ async function calculateSpawnCoordinates(spawnLocationId?: string): Promise<{ x:
       }
 
       return {
-        x: response.Item.coordinates.x,
-        y: response.Item.coordinates.y
+        x: item.coordinates.x,
+        y: item.coordinates.y
       };
     }
 
@@ -280,9 +246,9 @@ async function calculateSpawnCoordinates(spawnLocationId?: string): Promise<{ x:
  * Create the player base record
  */
 async function createPlayerBase(
-  request: CreateBaseRequest, 
+  request: CreateBaseRequestInput, 
   template: BaseTemplate, 
-  coordinates: { x: number; y: number }
+  coordinates: Coordinates
 ): Promise<PlayerBase> {
   try {
     const now = Date.now();

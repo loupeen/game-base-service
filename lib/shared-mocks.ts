@@ -15,21 +15,21 @@ export class StructuredLogger {
     this.context = context;
   }
 
-  info(message: string, details?: any): void {
-    console.log(`[INFO] ${this.context}: ${message}`, details || '');
+  info(message: string, details?: Record<string, unknown>): void {
+    console.log(`[INFO] ${this.context}: ${message}`, details ?? '');
   }
 
-  warn(message: string, details?: any): void {
-    console.warn(`[WARN] ${this.context}: ${message}`, details || '');
+  warn(message: string, details?: Record<string, unknown>): void {
+    console.warn(`[WARN] ${this.context}: ${message}`, details ?? '');
   }
 
-  error(message: string, details?: any): void {
-    console.error(`[ERROR] ${this.context}: ${message}`, details || '');
+  error(message: string, details?: Record<string, unknown>): void {
+    console.error(`[ERROR] ${this.context}: ${message}`, details ?? '');
   }
 
-  debug(message: string, details?: any): void {
+  debug(message: string, details?: Record<string, unknown>): void {
     if (process.env.NODE_ENV === 'development') {
-      console.debug(`[DEBUG] ${this.context}: ${message}`, details || '');
+      console.debug(`[DEBUG] ${this.context}: ${message}`, details ?? '');
     }
   }
 }
@@ -37,9 +37,9 @@ export class StructuredLogger {
 // Mock GameEngineError
 export class GameEngineError extends Error {
   public readonly code: string;
-  public readonly details?: any;
+  public readonly details?: Record<string, unknown>;
 
-  constructor(message: string, code: string, details?: any) {
+  constructor(message: string, code: string, details?: Record<string, unknown>) {
     super(message);
     this.name = 'GameEngineError';
     this.code = code;
@@ -72,7 +72,7 @@ export const withErrorHandling = async <T>(
 
 // Mock validateRequest
 export const validateRequest = async <T>(
-  schema: any,
+  schema: { parse: (data: unknown) => T },
   body: string | null
 ): Promise<T> => {
   if (!body) {
@@ -81,7 +81,7 @@ export const validateRequest = async <T>(
 
   try {
     const parsed = JSON.parse(body);
-    return schema.parse(parsed) as T;
+    return schema.parse(parsed);
   } catch (error) {
     throw new GameEngineError('Invalid request format', 'VALIDATION_ERROR', { error: (error as Error).message });
   }

@@ -8,6 +8,12 @@ import {
   validateRequest 
 } from '../../lib/shared-mocks';
 import { z } from 'zod';
+import { 
+  ListBasesRequest, 
+  BaseSummary, 
+  EnrichedPlayerBase,
+  QueryResult 
+} from '../types/game-base-types';
 
 const dynamoClient = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
@@ -23,7 +29,7 @@ const ListBasesRequestSchema = z.object({
   includeStats: z.boolean().optional().default(true)
 });
 
-type ListBasesRequest = z.infer<typeof ListBasesRequestSchema>;
+type ListBasesRequestInput = z.infer<typeof ListBasesRequestSchema>;
 
 /**
  * List Bases Handler
@@ -90,7 +96,7 @@ export const handler = async (
   }, logger);
 };
 
-function extractListBasesRequest(event: APIGatewayProxyEvent): ListBasesRequest {
+function extractListBasesRequest(event: APIGatewayProxyEvent): ListBasesRequestInput {
   const queryParams = event.queryStringParameters || {};
   const pathParams = event.pathParameters || {};
   
@@ -103,8 +109,8 @@ function extractListBasesRequest(event: APIGatewayProxyEvent): ListBasesRequest 
   };
 }
 
-async function getPlayerBases(request: ListBasesRequest): Promise<{
-  bases: any[];
+async function getPlayerBases(request: ListBasesRequestInput): Promise<{
+  bases: EnrichedPlayerBase[];
   lastEvaluatedKey?: string;
 }> {
   try {
@@ -147,28 +153,40 @@ async function getPlayerBases(request: ListBasesRequest): Promise<{
     const response = await docClient.send(command);
     
     // Process and enrich the base data
-    const bases = response.Items?.map(base => ({
-      ...base,
-      // Add computed fields
-      isActive: base.status === 'active',
-      isUpgrading: base.buildCompletionTime && base.buildCompletionTime > Date.now(),
-      canMove: base.status === 'active' && (!base.lastMovedAt || 
-        (Date.now() - base.lastMovedAt) >= (60 * 60 * 1000)), // 60 minute cooldown
+    const bases = (response.Items ?? []).map(item => {
+      // Type assertion to ensure we have the expected structure
+      const base = item as Record<string, unknown> & {
+        coordinates: { x: number; y: number };
+        status: string;
+        buildCompletionTime?: number;
+        arrivalTime?: number;
+        lastMovedAt?: number;
+        createdAt: number;
+      };
       
-      // Format coordinates for display
-      location: `${base.coordinates.x}, ${base.coordinates.y}`,
-      
-      // Calculate age
-      ageInDays: Math.floor((Date.now() - base.createdAt) / (24 * 60 * 60 * 1000)),
-      
-      // Status-specific information
-      ...(base.status === 'building' && base.buildCompletionTime && {
-        completionIn: Math.max(0, base.buildCompletionTime - Date.now())
-      }),
-      ...(base.status === 'moving' && base.arrivalTime && {
-        arrivalIn: Math.max(0, base.arrivalTime - Date.now())
-      })
-    })) || [];
+      return {
+        ...base,
+        // Add computed fields
+        isActive: base.status === 'active',
+        isUpgrading: Boolean(base.buildCompletionTime && base.buildCompletionTime > Date.now()),
+        canMove: base.status === 'active' && (!base.lastMovedAt || 
+          (Date.now() - base.lastMovedAt) >= (60 * 60 * 1000)), // 60 minute cooldown
+        
+        // Format coordinates for display
+        location: `${base.coordinates.x}, ${base.coordinates.y}`,
+        
+        // Calculate age
+        ageInDays: Math.floor((Date.now() - base.createdAt) / (24 * 60 * 60 * 1000)),
+        
+        // Status-specific information
+        ...(base.status === 'building' && base.buildCompletionTime && {
+          completionIn: Math.max(0, base.buildCompletionTime - Date.now())
+        }),
+        ...(base.status === 'moving' && base.arrivalTime && {
+          arrivalIn: Math.max(0, base.arrivalTime - Date.now())
+        })
+      } as EnrichedPlayerBase;
+    });
 
     // Encode pagination key
     const lastEvaluatedKey = response.LastEvaluatedKey ? 
@@ -189,7 +207,7 @@ async function getPlayerBases(request: ListBasesRequest): Promise<{
   }
 }
 
-async function calculateBaseSummary(playerId: string): Promise<any> {
+async function calculateBaseSummary(playerId: string): Promise<BaseSummary> {
   try {
     // Get all bases for summary statistics
     const command = new QueryCommand({
@@ -206,12 +224,17 @@ async function calculateBaseSummary(playerId: string): Promise<any> {
     });
 
     const response = await docClient.send(command);
-    const bases = response.Items || [];
+    const bases = (response.Items ?? []).map(item => item as Record<string, unknown> & {
+      status: string;
+      baseType: string;
+      level?: number;
+      createdAt: number;
+    });
 
     // Calculate statistics
-    const summary = {
+    const summary: BaseSummary = {
       totalBases: bases.length,
-      activeBase: bases.filter(b => b.status === 'active').length,
+      activeBases: bases.filter(b => b.status === 'active').length,
       buildingBases: bases.filter(b => b.status === 'building').length,
       movingBases: bases.filter(b => b.status === 'moving').length,
       destroyedBases: bases.filter(b => b.status === 'destroyed').length,
@@ -224,8 +247,8 @@ async function calculateBaseSummary(playerId: string): Promise<any> {
       
       // Level distribution
       averageLevel: bases.length > 0 ? 
-        Math.round(bases.reduce((sum, base) => sum + (base.level || 1), 0) / bases.length * 10) / 10 : 0,
-      maxLevel: bases.length > 0 ? Math.max(...bases.map(base => base.level || 1)) : 0,
+        Math.round(bases.reduce((sum, base) => sum + (base.level ?? 1), 0) / bases.length * 10) / 10 : 0,
+      maxLevel: bases.length > 0 ? Math.max(...bases.map(base => base.level ?? 1)) : 0,
       
       // TODO: Add subscription info (max bases allowed)
       maxBasesAllowed: 5, // Default for free players
