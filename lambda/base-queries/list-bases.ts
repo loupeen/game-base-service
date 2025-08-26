@@ -13,7 +13,7 @@ const dynamoClient = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
 const logger = new StructuredLogger('ListBasesHandler');
 
-const PLAYER_BASES_TABLE = process.env.PLAYER_BASES_TABLE!;
+const PLAYER_BASES_TABLE = process.env.PLAYER_BASES_TABLE ?? '';
 
 const ListBasesRequestSchema = z.object({
   playerId: z.string().min(1).max(50),
@@ -95,7 +95,7 @@ function extractListBasesRequest(event: APIGatewayProxyEvent): ListBasesRequest 
   const pathParams = event.pathParameters || {};
   
   return {
-    playerId: pathParams.playerId || queryParams.playerId || '',
+    playerId: pathParams.playerId || queryParams.playerId ?? '',
     status: (queryParams.status as any) || 'all',
     limit: queryParams.limit ? parseInt(queryParams.limit) : 20,
     lastEvaluatedKey: queryParams.lastEvaluatedKey,
@@ -218,7 +218,7 @@ async function calculateBaseSummary(playerId: string): Promise<any> {
       
       // Base type distribution
       baseTypes: bases.reduce((acc, base) => {
-        acc[base.baseType] = (acc[base.baseType] || 0) + 1;
+        acc[base.baseType] = (acc[base.baseType] ?? 0) + 1;
         return acc;
       }, {} as Record<string, number>),
       

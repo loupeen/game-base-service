@@ -3,19 +3,24 @@ import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { GameBaseServiceStack } from '../lib/game-base-service-stack';
 // Temporary mock for shared-config-library
-const getEnvironmentConfig = (env: string) => {
-  const configs = {
+interface EnvConfig {
+  account: string;
+  region: string;
+}
+
+const getEnvironmentConfig = (env: string): EnvConfig => {
+  const configs: Record<string, EnvConfig> = {
     test: { account: '728427470046', region: 'eu-north-1' },
     qa: { account: '077029784291', region: 'us-east-1' },
     production: { account: 'TBD', region: 'us-east-1' }
   };
-  return configs[env as keyof typeof configs] || configs.test;
+  return configs[env] ?? configs.test;
 };
 
 const app = new cdk.App();
 
 // Get environment from context or default to 'test'
-const environment = app.node.tryGetContext('environment') || 'test';
+const environment = (app.node.tryGetContext('environment') ?? 'test') as string;
 const envConfig = getEnvironmentConfig(environment);
 
 // Validate environment

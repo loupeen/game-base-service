@@ -13,8 +13,8 @@ const dynamoClient = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
 const logger = new StructuredLogger('CalculateSpawnLocationHandler');
 
-const PLAYER_BASES_TABLE = process.env.PLAYER_BASES_TABLE!;
-const SPAWN_LOCATIONS_TABLE = process.env.SPAWN_LOCATIONS_TABLE!;
+const PLAYER_BASES_TABLE = process.env.PLAYER_BASES_TABLE ?? '';
+const SPAWN_LOCATIONS_TABLE = process.env.SPAWN_LOCATIONS_TABLE ?? '';
 
 const CalculateSpawnLocationRequestSchema = z.object({
   playerId: z.string().min(1).max(50),
@@ -185,7 +185,7 @@ async function analyzePopulationDensity(): Promise<Map<string, number>> {
     // Count bases per map section
     response.Items?.forEach(item => {
       const sectionId = item.mapSectionId;
-      densityMap.set(sectionId, (densityMap.get(sectionId) || 0) + 1);
+      densityMap.set(sectionId, (densityMap.get(sectionId) ?? 0) + 1);
     });
 
     return densityMap;

@@ -13,8 +13,7 @@ const dynamoClient = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
 const logger = new StructuredLogger('MoveBaseHandler');
 
-const PLAYER_BASES_TABLE = process.env.PLAYER_BASES_TABLE!;
-const ENVIRONMENT = process.env.ENVIRONMENT!;
+const PLAYER_BASES_TABLE = process.env.PLAYER_BASES_TABLE ?? '';
 
 const MoveBaseRequestSchema = z.object({
   playerId: z.string().min(1).max(50),

@@ -5,8 +5,7 @@ import {
   StructuredLogger, 
   GameEngineError,
   withErrorHandling,
-  validateRequest,
-  publishCustomMetric 
+  validateRequest
 } from '../../lib/shared-mocks';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
@@ -17,10 +16,10 @@ const docClient = DynamoDBDocumentClient.from(dynamoClient);
 const logger = new StructuredLogger('CreateBaseHandler');
 
 // Environment variables
-const PLAYER_BASES_TABLE = process.env.PLAYER_BASES_TABLE!;
-const BASE_TEMPLATES_TABLE = process.env.BASE_TEMPLATES_TABLE!;
-const SPAWN_LOCATIONS_TABLE = process.env.SPAWN_LOCATIONS_TABLE!;
-const ENVIRONMENT = process.env.ENVIRONMENT!;
+const PLAYER_BASES_TABLE = process.env.PLAYER_BASES_TABLE ?? '';
+const BASE_TEMPLATES_TABLE = process.env.BASE_TEMPLATES_TABLE ?? '';
+const SPAWN_LOCATIONS_TABLE = process.env.SPAWN_LOCATIONS_TABLE ?? '';
+const ENVIRONMENT = process.env.ENVIRONMENT ?? 'test';
 
 // Request validation schema following shared-js-utils patterns
 const CreateBaseRequestSchema = z.object({
@@ -114,7 +113,7 @@ export const handler = async (
     const template = await getBaseTemplate(request.baseType);
     
     // Determine coordinates (use provided or calculate spawn location)
-    const coordinates = request.coordinates || await calculateSpawnCoordinates(request.spawnLocationId);
+    const coordinates = request.coordinates ?? await calculateSpawnCoordinates(request.spawnLocationId);
     
     // Create the new base
     const newBase = await createPlayerBase(request, template, coordinates);
@@ -165,7 +164,7 @@ async function validatePlayerBaseLimit(playerId: string): Promise<void> {
     });
 
     const response = await docClient.send(command);
-    const currentBaseCount = response.Count || 0;
+    const currentBaseCount = response.Count ?? 0;
 
     // TODO: Get player subscription status from player service
     const maxBases = 5; // Default for free players, 10 for subscribers

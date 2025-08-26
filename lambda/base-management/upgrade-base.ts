@@ -14,10 +14,10 @@ const dynamoClient = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
 const logger = new StructuredLogger('UpgradeBaseHandler');
 
-const PLAYER_BASES_TABLE = process.env.PLAYER_BASES_TABLE!;
-const BASE_TEMPLATES_TABLE = process.env.BASE_TEMPLATES_TABLE!;
-const BASE_UPGRADES_TABLE = process.env.BASE_UPGRADES_TABLE!;
-const ENVIRONMENT = process.env.ENVIRONMENT!;
+const PLAYER_BASES_TABLE = process.env.PLAYER_BASES_TABLE ?? '';
+const BASE_TEMPLATES_TABLE = process.env.BASE_TEMPLATES_TABLE ?? '';
+const BASE_UPGRADES_TABLE = process.env.BASE_UPGRADES_TABLE ?? '';
+const ENVIRONMENT = process.env.ENVIRONMENT ?? '';
 
 const UpgradeBaseRequestSchema = z.object({
   playerId: z.string().min(1).max(50),

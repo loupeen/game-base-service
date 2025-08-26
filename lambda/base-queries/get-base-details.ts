@@ -11,8 +11,8 @@ const dynamoClient = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
 const logger = new StructuredLogger('GetBaseDetailsHandler');
 
-const PLAYER_BASES_TABLE = process.env.PLAYER_BASES_TABLE!;
-const BASE_UPGRADES_TABLE = process.env.BASE_UPGRADES_TABLE!;
+const PLAYER_BASES_TABLE = process.env.PLAYER_BASES_TABLE ?? '';
+const BASE_UPGRADES_TABLE = process.env.BASE_UPGRADES_TABLE ?? '';
 
 /**
  * Get Base Details Handler
@@ -152,7 +152,7 @@ async function getBaseDetails(playerId: string, baseId: string): Promise<any> {
       defenseRating: calculateDefenseRating(base),
       
       // Storage information
-      storageCapacity: base.stats?.storage || 0,
+      storageCapacity: base.stats?.storage ?? 0,
       
       // Alliance context
       ...(base.allianceId && {
@@ -251,31 +251,31 @@ function calculateBaseMetrics(base: any, activeUpgrades: any[]): any {
 
 // Calculation helper functions
 function calculateGoldProduction(base: any): number {
-  const baseProduction = base.stats?.production || 0;
+  const baseProduction = base.stats?.production ?? 0;
   const levelMultiplier = 1 + (base.level * 0.1);
   return Math.floor(baseProduction * levelMultiplier * 0.4); // 40% of production goes to gold
 }
 
 function calculateFoodProduction(base: any): number {
-  const baseProduction = base.stats?.production || 0;
+  const baseProduction = base.stats?.production ?? 0;
   const levelMultiplier = 1 + (base.level * 0.1);
   return Math.floor(baseProduction * levelMultiplier * 0.3); // 30% to food
 }
 
 function calculateMaterialsProduction(base: any): number {
-  const baseProduction = base.stats?.production || 0;
+  const baseProduction = base.stats?.production ?? 0;
   const levelMultiplier = 1 + (base.level * 0.1);
   return Math.floor(baseProduction * levelMultiplier * 0.2); // 20% to materials
 }
 
 function calculateEnergyProduction(base: any): number {
-  const baseProduction = base.stats?.production || 0;
+  const baseProduction = base.stats?.production ?? 0;
   const levelMultiplier = 1 + (base.level * 0.1);
   return Math.floor(baseProduction * levelMultiplier * 0.1); // 10% to energy
 }
 
 function calculateDefenseRating(base: any): string {
-  const defense = base.stats?.defense || 0;
+  const defense = base.stats?.defense ?? 0;
   if (defense < 50) return 'Weak';
   if (defense < 150) return 'Moderate';
   if (defense < 300) return 'Strong';
@@ -286,28 +286,28 @@ function calculateDefenseRating(base: any): string {
 function calculateBaseScore(base: any): number {
   const level = base.level || 1;
   const stats = base.stats || {};
-  const defense = stats.defense || 0;
-  const production = stats.production || 0;
-  const storage = stats.storage || 0;
+  const defense = stats.defense ?? 0;
+  const production = stats.production ?? 0;
+  const storage = stats.storage ?? 0;
   
   return Math.floor((level * 100) + (defense * 0.5) + (production * 2) + (storage * 0.1));
 }
 
 function calculateProductionEfficiency(base: any): number {
   const expectedProduction = base.level * 50; // Expected production per level
-  const actualProduction = base.stats?.production || 0;
+  const actualProduction = base.stats?.production ?? 0;
   return Math.min(1, actualProduction / expectedProduction);
 }
 
 function calculateDefenseEfficiency(base: any): number {
   const expectedDefense = base.level * 30; // Expected defense per level
-  const actualDefense = base.stats?.defense || 0;
+  const actualDefense = base.stats?.defense ?? 0;
   return Math.min(1, actualDefense / expectedDefense);
 }
 
 function calculateStorageEfficiency(base: any): number {
   const expectedStorage = base.level * 200; // Expected storage per level
-  const actualStorage = base.stats?.storage || 0;
+  const actualStorage = base.stats?.storage ?? 0;
   return Math.min(1, actualStorage / expectedStorage);
 }
 
