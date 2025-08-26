@@ -27,6 +27,7 @@ import {
 } from '../../fixtures/test-data';
 
 // Access the mock function from the mocked module
+// eslint-disable-next-line @typescript-eslint/no-require-imports, no-undef
 const mockSend = require('@aws-sdk/lib-dynamodb').__mockSend;
 
 describe('Create Base Lambda', () => {
