@@ -8,6 +8,10 @@ import {
   validateRequest 
 } from '../../lib/shared-mocks';
 import { z } from 'zod';
+import { 
+  PlayerBase, 
+  Coordinates 
+} from '../types/game-base-types';
 
 const dynamoClient = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
@@ -25,7 +29,7 @@ const MoveBaseRequestSchema = z.object({
   useTeleport: z.boolean().optional().default(false) // Instant movement for gold
 });
 
-type MoveBaseRequest = z.infer<typeof MoveBaseRequestSchema>;
+type MoveBaseRequestInput = z.infer<typeof MoveBaseRequestSchema>;
 
 /**
  * Move Base Handler
@@ -53,13 +57,13 @@ export const handler = async (
       requestId: event.requestContext?.requestId 
     });
 
-    const request = await validateRequest<MoveBaseRequest>(MoveBaseRequestSchema, event.body);
+    const request = await validateRequest<MoveBaseRequestInput>(MoveBaseRequestSchema, event.body);
     
     // Get current base state
     const currentBase = await getPlayerBase(request.playerId, request.baseId);
     
     // Validate movement is allowed
-    await validateMovement(currentBase, request.newCoordinates, request.useTeleport);
+    validateMovement(currentBase, request.newCoordinates, request.useTeleport);
     
     // Check destination is available
     await validateDestination(request.newCoordinates, request.baseId);
@@ -98,7 +102,7 @@ export const handler = async (
   }, logger);
 };
 
-async function getPlayerBase(playerId: string, baseId: string): Promise<any> {
+async function getPlayerBase(playerId: string, baseId: string): Promise<PlayerBase> {
   try {
     const command = new GetCommand({
       TableName: PLAYER_BASES_TABLE,
@@ -115,7 +119,7 @@ async function getPlayerBase(playerId: string, baseId: string): Promise<any> {
       );
     }
 
-    const base = response.Item;
+    const base = response.Item as PlayerBase;
     
     if (base.status !== 'active') {
       throw new GameEngineError(
@@ -136,11 +140,11 @@ async function getPlayerBase(playerId: string, baseId: string): Promise<any> {
   }
 }
 
-async function validateMovement(
-  base: any, 
-  newCoordinates: { x: number; y: number }, 
+function validateMovement(
+  base: PlayerBase, 
+  newCoordinates: Coordinates, 
   useTeleport: boolean
-): Promise<void> {
+): void {
   try {
     const now = Date.now();
     const cooldownPeriod = 60 * 60 * 1000; // 60 minutes in milliseconds
@@ -192,7 +196,7 @@ async function validateMovement(
 }
 
 async function validateDestination(
-  coordinates: { x: number; y: number }, 
+  coordinates: Coordinates, 
   excludeBaseId: string
 ): Promise<void> {
   try {
@@ -238,8 +242,8 @@ async function validateDestination(
 }
 
 function calculateMovementDetails(
-  base: any, 
-  newCoordinates: { x: number; y: number }, 
+  base: PlayerBase, 
+  newCoordinates: Coordinates, 
   useTeleport: boolean
 ): { travelTime: number; goldCost?: number; distance: number } {
   const distance = calculateDistance(base.coordinates, newCoordinates);
@@ -263,8 +267,8 @@ function calculateMovementDetails(
 }
 
 function calculateDistance(
-  from: { x: number; y: number }, 
-  to: { x: number; y: number }
+  from: Coordinates, 
+  to: Coordinates
 ): number {
   const dx = to.x - from.x;
   const dy = to.y - from.y;
@@ -272,10 +276,10 @@ function calculateDistance(
 }
 
 async function executeBaseMovement(
-  request: MoveBaseRequest,
-  base: any,
+  request: MoveBaseRequestInput,
+  base: PlayerBase,
   movementDetails: { travelTime: number; goldCost?: number; distance: number }
-): Promise<any> {
+): Promise<PlayerBase> {
   try {
     const now = Date.now();
     const arrivalTime = now + (movementDetails.travelTime * 1000);
@@ -317,14 +321,7 @@ async function executeBaseMovement(
 
     // TODO: If teleport, deduct gold cost from player resources (integrate with resource service)
 
-    return {
-      baseId: request.baseId,
-      newCoordinates: request.newCoordinates,
-      status: request.useTeleport ? 'active' : 'moving',
-      arrivalTime: request.useTeleport ? now : arrivalTime,
-      goldCost: movementDetails.goldCost,
-      distance: movementDetails.distance
-    };
+    return response.Attributes as PlayerBase;
 
   } catch (error) {
     throw new GameEngineError(
