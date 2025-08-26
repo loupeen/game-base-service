@@ -118,26 +118,28 @@ async function getPlayerBases(request: ListBasesRequestInput): Promise<{
       ':playerId': request.playerId
     };
 
+    const expressionAttributeNames: Record<string, string> = {};
+
     // Add status filtering if not 'all'
     if (request.status !== 'all') {
       filterExpression = '#status = :status';
       expressionAttributeValues[':status'] = request.status;
+      expressionAttributeNames['#status'] = 'status';
     }
 
     // Prepare projection expression based on includeStats
     let projectionExpression: string | undefined;
     if (!request.includeStats) {
       projectionExpression = 'playerId, baseId, baseName, baseType, #level, coordinates, #status, createdAt, lastActiveAt';
+      expressionAttributeNames['#level'] = 'level';
+      expressionAttributeNames['#status'] = 'status'; // Needed for projection
     }
 
     const command = new QueryCommand({
       TableName: PLAYER_BASES_TABLE,
       KeyConditionExpression: keyConditionExpression,
       FilterExpression: filterExpression,
-      ExpressionAttributeNames: {
-        '#status': 'status',
-        '#level': 'level'
-      },
+      ExpressionAttributeNames: Object.keys(expressionAttributeNames).length > 0 ? expressionAttributeNames : undefined,
       ExpressionAttributeValues: expressionAttributeValues,
       ProjectionExpression: projectionExpression,
       Limit: request.limit,

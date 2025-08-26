@@ -87,8 +87,7 @@ describe('Base Management Integration Flow', () => {
       try {
         // Step 1: List bases (should be empty initially)
         console.log(`📋 Step 1: Listing bases for player ${TEST_PLAYER_ID}`);
-        const initialListResponse = await axios.get<ListBasesResponse>(`${API_BASE_URL}/bases`, {
-          params: { playerId: TEST_PLAYER_ID },
+        const initialListResponse = await axios.get<ListBasesResponse>(`${API_BASE_URL}/players/${TEST_PLAYER_ID}/bases`, {
           timeout: 10000
         });
         
@@ -121,8 +120,7 @@ describe('Base Management Integration Flow', () => {
 
         // Step 3: Verify base was created by listing again  
         console.log('📋 Step 3: Verifying base creation');
-        const verifyListResponse = await axios.get<ListBasesResponse>(`${API_BASE_URL}/bases`, {
-          params: { playerId: TEST_PLAYER_ID },
+        const verifyListResponse = await axios.get<ListBasesResponse>(`${API_BASE_URL}/players/${TEST_PLAYER_ID}/bases`, {
           timeout: 10000
         });
 
@@ -133,7 +131,7 @@ describe('Base Management Integration Flow', () => {
 
         // Step 4: Get base details
         console.log('🔍 Step 4: Getting base details');
-        const detailsResponse = await axios.get(`${API_BASE_URL}/bases/${TEST_PLAYER_ID}/${createdBaseId}`, {
+        const detailsResponse = await axios.get(`${API_BASE_URL}/players/${TEST_PLAYER_ID}/bases/${createdBaseId}`, {
           timeout: 10000
         });
 
@@ -173,8 +171,7 @@ describe('Base Management Integration Flow', () => {
 
       try {
         // Basic connectivity test
-        const response = await axios.get(`${API_BASE_URL}/bases`, {
-          params: { playerId: 'health-check-test' },
+        const response = await axios.get(`${API_BASE_URL}/players/health-check-test/bases`, {
           timeout: 5000
         });
         
