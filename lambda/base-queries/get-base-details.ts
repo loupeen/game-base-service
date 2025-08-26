@@ -8,10 +8,7 @@ import {
 } from '../../lib/shared-mocks';
 import { 
   PlayerBase, 
-  BaseTemplate,
-  BaseNeighbor,
-  EnrichedPlayerBase,
-  GetBaseDetailsRequest 
+  EnrichedPlayerBase
 } from '../types/game-base-types';
 
 const dynamoClient = new DynamoDBClient({});
@@ -180,7 +177,7 @@ async function getBaseDetails(playerId: string, baseId: string): Promise<Enriche
   }
 }
 
-async function getActiveUpgrades(playerId: string, baseId: string): Promise<any[]> {
+async function getActiveUpgrades(playerId: string, baseId: string): Promise<unknown[]> {
   try {
     const command = new QueryCommand({
       TableName: BASE_UPGRADES_TABLE,

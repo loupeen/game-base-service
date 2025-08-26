@@ -293,7 +293,7 @@ async function executeBaseMovement(
       : 'SET coordinates = :newCoords, mapSectionId = :newSection, coordinateHash = :newHash, #status = :moving, lastMovedAt = :now, lastActiveAt = :now, arrivalTime = :arrivalTime';
     
     const expressionAttributeNames: Record<string, string> = request.useTeleport ? {} : { '#status': 'status' };
-    const expressionAttributeValues: Record<string, any> = {
+    const expressionAttributeValues: Record<string, unknown> = {
       ':newCoords': request.newCoordinates,
       ':newSection': newMapSectionId,
       ':newHash': newCoordinateHash,

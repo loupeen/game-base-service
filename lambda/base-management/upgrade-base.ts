@@ -11,9 +11,7 @@ import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
 import { 
   PlayerBase, 
-  BaseTemplate, 
-  BaseUpgradeTemplate,
-  UpgradeBaseRequest 
+  BaseTemplate
 } from '../types/game-base-types';
 
 const dynamoClient = new DynamoDBClient({});
