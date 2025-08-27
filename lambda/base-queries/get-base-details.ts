@@ -2,10 +2,10 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, GetCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
 import { 
-  StructuredLogger, 
-  GameEngineError,
-  withErrorHandling 
-} from '../../lib/shared-mocks';
+  SimpleLambdaLogger,
+  withLambdaErrorHandling,
+  createGameEngineError
+} from '@loupeen/shared-js-utils';
 import { 
   PlayerBase, 
   EnrichedPlayerBase
@@ -13,7 +13,7 @@ import {
 
 const dynamoClient = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
-const logger = new StructuredLogger('GetBaseDetailsHandler');
+const logger = new SimpleLambdaLogger('GetBaseDetailsHandler');
 
 const PLAYER_BASES_TABLE = process.env.PLAYER_BASES_TABLE ?? '';
 const BASE_UPGRADES_TABLE = process.env.BASE_UPGRADES_TABLE ?? '';
@@ -39,7 +39,7 @@ const BASE_UPGRADES_TABLE = process.env.BASE_UPGRADES_TABLE ?? '';
 export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-  return withErrorHandling(async () => {
+  return withLambdaErrorHandling(async () => {
     logger.info('Processing get base details request', { 
       requestId: event.requestContext?.requestId 
     });
@@ -49,7 +49,7 @@ export const handler = async (
     const baseId = event.pathParameters?.baseId;
 
     if (!playerId || !baseId) {
-      throw new GameEngineError(
+      throw createGameEngineError(
         'Missing required parameters: playerId and baseId',
         'INVALID_PARAMETERS',
         { playerId, baseId }
@@ -100,7 +100,7 @@ async function getBaseDetails(playerId: string, baseId: string): Promise<Enriche
     const response = await docClient.send(command);
     
     if (!response.Item) {
-      throw new GameEngineError(
+      throw createGameEngineError(
         'Base not found',
         'BASE_NOT_FOUND',
         { playerId, baseId }
@@ -168,8 +168,8 @@ async function getBaseDetails(playerId: string, baseId: string): Promise<Enriche
     return enrichedBase as unknown as EnrichedPlayerBase;
 
   } catch (error) {
-    if (error instanceof GameEngineError) throw error;
-    throw new GameEngineError(
+    if (error instanceof Error && error.name === 'GameEngineError') throw error;
+    throw createGameEngineError(
       'Failed to retrieve base details',
       'BASE_RETRIEVAL_ERROR',
       { playerId, baseId, error: (error as Error).message }

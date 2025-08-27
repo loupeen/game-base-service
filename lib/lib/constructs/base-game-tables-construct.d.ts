@@ -31,7 +31,7 @@ export declare class BaseGameTablesConstruct extends Construct {
     private createSpawnLocationsTable;
     private createBaseUpgradesTable;
     /**
-     * Create custom resource to seed base templates table with initial data
+     * Create seeder for base templates table using shared construct
      */
     private createBaseTemplatesSeeder;
 }

@@ -1,11 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as cr from 'aws-cdk-lib/custom-resources';
-import * as logs from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
-import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { DynamoDBTableSeeder } from '@loupeen/shared-cdk-constructs';
 import { GameBaseServiceConfig } from '../config/environment-config';
 
 export interface BaseGameTablesConstructProps {
@@ -52,7 +48,7 @@ export class BaseGameTablesConstruct extends Construct {
     this.baseUpgradesTable = this.createBaseUpgradesTable(environment, config);
 
     // Seed base templates table with initial data
-    this.createBaseTemplatesSeeder(environment, config);
+    this.createBaseTemplatesSeeder(environment);
   }
 
   private createPlayerBasesTable(environment: string, config: GameBaseServiceConfig): dynamodb.Table {
@@ -253,51 +249,15 @@ export class BaseGameTablesConstruct extends Construct {
   }
 
   /**
-   * Create custom resource to seed base templates table with initial data
+   * Create seeder for base templates table using shared construct
    */
-  private createBaseTemplatesSeeder(environment: string, config: GameBaseServiceConfig): void {
-    // Create Lambda function for seeding base templates using NodejsFunction for proper TypeScript bundling
-    const seedFunction = new NodejsFunction(this, 'BaseTemplatesSeederFunction', {
-      functionName: `game-base-seed-templates-${environment}`,
-      runtime: lambda.Runtime.NODEJS_20_X,
-      architecture: lambda.Architecture.X86_64, // Consistent with other Lambda functions
-      entry: 'lambda/seed-data/seed-base-templates.ts',
-      timeout: cdk.Duration.minutes(5),
-      environment: {
-        BASE_TEMPLATES_TABLE: this.baseTemplatesTable.tableName,
-        NODE_OPTIONS: '--enable-source-maps'
-      },
-      bundling: {
-        minify: true,
-        target: 'es2020',
-        keepNames: true,
-        externalModules: ['@aws-sdk/*'] // Use Lambda runtime version
-      },
-      logRetention: logs.RetentionDays.ONE_MONTH
+  private createBaseTemplatesSeeder(environment: string): void {
+    new DynamoDBTableSeeder(this, 'BaseTemplatesSeeder', {
+      table: this.baseTemplatesTable,
+      seedDataPath: 'lambda/seed-data/seed-base-templates.ts',
+      seedVersion: '1.0.0',
+      environment,
+      seedFunctionName: `game-base-seed-templates-${environment}`
     });
-
-    // Grant the Lambda function permissions to read/write the base templates table
-    this.baseTemplatesTable.grantReadWriteData(seedFunction);
-
-    // Create the custom resource
-    const seedProvider = new cr.Provider(this, 'BaseTemplatesSeederProvider', {
-      onEventHandler: seedFunction,
-      logRetention: 30, // 30 days log retention
-      providerFunctionName: `game-base-seed-provider-${environment}`
-    });
-
-    // Create custom resource that triggers the seeding
-    const seedResource = new cdk.CustomResource(this, 'BaseTemplatesSeederResource', {
-      serviceToken: seedProvider.serviceToken,
-      properties: {
-        // Change this value to trigger re-seeding during updates
-        SeedVersion: '1.0.0',
-        Environment: environment,
-        TableName: this.baseTemplatesTable.tableName
-      }
-    });
-
-    // Ensure seeding happens after table is ready
-    seedResource.node.addDependency(this.baseTemplatesTable);
   }
 }

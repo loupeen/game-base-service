@@ -3,19 +3,17 @@
  * Seeds the BASE_TEMPLATES_TABLE with initial base template data
  * 
  * This Lambda function is invoked during CDK deployment to populate
- * the DynamoDB table with required game data.
+ * the DynamoDB table with required game data using shared utilities.
  */
 
 /* eslint-disable no-console, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/restrict-template-expressions */
 
-import { CloudFormationCustomResourceEvent, CloudFormationCustomResourceResponse } from 'aws-lambda';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, PutCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
+import { TableSeederHandler } from '@loupeen/shared-cdk-constructs';
 
 const dynamoClient = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
-
-const BASE_TEMPLATES_TABLE = process.env.BASE_TEMPLATES_TABLE!;
 
 // Base template data - matches test-data.ts structure
 const BASE_TEMPLATES = [
@@ -141,100 +139,66 @@ const BASE_TEMPLATES = [
   }
 ];
 
-export const handler = async (
-  event: CloudFormationCustomResourceEvent
-): Promise<CloudFormationCustomResourceResponse> => {
-  console.log('Received event:', JSON.stringify(event, null, 2));
+/**
+ * Base Templates Seeder Implementation
+ */
+class BaseTemplatesSeeder extends TableSeederHandler {
+  protected async seed(): Promise<any> {
+    console.log(`Seeding table: ${this.tableName}`);
+    
+    // Insert all base templates
+    for (const template of BASE_TEMPLATES) {
+      console.log(`Inserting template: ${template.templateId}`);
+      
+      const command = new PutCommand({
+        TableName: this.tableName,
+        Item: template,
+        ConditionExpression: 'attribute_not_exists(templateId)' // Only insert if doesn't exist
+      });
 
-  const { RequestType, StackId, RequestId, LogicalResourceId } = event;
-  const physicalId = (event as any).PhysicalResourceId ?? `seed-base-templates-${Date.now()}`;
-
-  try {
-    switch (RequestType) {
-      case 'Create':
-      case 'Update':
-        console.log(`Seeding BASE_TEMPLATES_TABLE: ${BASE_TEMPLATES_TABLE}`);
-        
-        // Insert all base templates
-        for (const template of BASE_TEMPLATES) {
-          console.log(`Inserting template: ${template.templateId}`);
-          
-          const command = new PutCommand({
-            TableName: BASE_TEMPLATES_TABLE,
-            Item: template,
-            ConditionExpression: 'attribute_not_exists(templateId)' // Only insert if doesn't exist
-          });
-
-          try {
-            await docClient.send(command);
-            console.log(`✅ Inserted template: ${template.templateId}`);
-          } catch (error: any) {
-            if (error.name === 'ConditionalCheckFailedException') {
-              console.log(`⚠️  Template ${template.templateId} already exists, skipping`);
-            } else {
-              throw error;
-            }
-          }
+      try {
+        await docClient.send(command);
+        console.log(`✅ Inserted template: ${template.templateId}`);
+      } catch (error: any) {
+        if (error.name === 'ConditionalCheckFailedException') {
+          console.log(`⚠️  Template ${template.templateId} already exists, skipping`);
+        } else {
+          throw error;
         }
-
-        console.log('✅ Base template seeding completed successfully');
-        break;
-
-      case 'Delete':
-        console.log(`Cleaning up BASE_TEMPLATES_TABLE: ${BASE_TEMPLATES_TABLE}`);
-        
-        // Delete all base templates we created
-        for (const template of BASE_TEMPLATES) {
-          console.log(`Deleting template: ${template.templateId}`);
-          
-          const command = new DeleteCommand({
-            TableName: BASE_TEMPLATES_TABLE,
-            Key: {
-              templateId: template.templateId
-            }
-          });
-
-          try {
-            await docClient.send(command);
-            console.log(`✅ Deleted template: ${template.templateId}`);
-          } catch (error: any) {
-            console.log(`⚠️  Could not delete ${template.templateId}: ${error.message}`);
-            // Continue with other deletions
-          }
-        }
-
-        console.log('✅ Base template cleanup completed');
-        break;
-
-      default:
-        throw new Error(`Unknown request type: ${RequestType}`);
+      }
     }
 
     return {
-      Status: 'SUCCESS',
-      StackId,
-      RequestId,
-      LogicalResourceId,
-      PhysicalResourceId: physicalId,
-      Data: {
-        Message: `Base templates ${RequestType.toLowerCase()} completed successfully`,
-        TemplateCount: BASE_TEMPLATES.length
-      }
-    };
-
-  } catch (error) {
-    console.error('❌ Error in base template seeding:', error);
-    
-    return {
-      Status: 'FAILED',
-      StackId,
-      RequestId,
-      LogicalResourceId,
-      PhysicalResourceId: physicalId,
-      Reason: `Failed to ${RequestType.toLowerCase()} base templates: ${(error as Error).message}`,
-      Data: {
-        Error: (error as Error).message
-      }
+      Message: 'Base templates seeded successfully',
+      TemplateCount: BASE_TEMPLATES.length
     };
   }
-};
+
+  protected async cleanup(): Promise<void> {
+    console.log(`Cleaning up table: ${this.tableName}`);
+    
+    // Delete all base templates we created
+    for (const template of BASE_TEMPLATES) {
+      console.log(`Deleting template: ${template.templateId}`);
+      
+      const command = new DeleteCommand({
+        TableName: this.tableName,
+        Key: {
+          templateId: template.templateId
+        }
+      });
+
+      try {
+        await docClient.send(command);
+        console.log(`✅ Deleted template: ${template.templateId}`);
+      } catch (error: any) {
+        console.log(`⚠️  Could not delete ${template.templateId}: ${error.message}`);
+        // Continue with other deletions
+      }
+    }
+  }
+}
+
+// Create handler instance and export the handler function
+const seeder = new BaseTemplatesSeeder();
+export const handler = seeder.handle.bind(seeder);
