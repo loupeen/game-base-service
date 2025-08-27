@@ -27,7 +27,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::728427470046:role/cdk-hnb659fds-deploy-role-728427470046-eu-north-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::728427470046:role/cdk-hnb659fds-cfn-exec-role-728427470046-eu-north-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-728427470046-eu-north-1/8718aacc13110da9e0cb872ac75bf82621a51d8ba99194cc8b43b729fd8030b6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-728427470046-eu-north-1/8438e29758a4bd6f7897a970feefe03949cfb345a5b7e2929adfd0b6a932b041.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -132,6 +132,72 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "TablesBaseUpgradesTable17BAF8AD"
+          }
+        ],
+        "/GameBaseService-test/Tables/BaseTemplatesSeederFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TablesBaseTemplatesSeederFunctionServiceRole080F2B13"
+          }
+        ],
+        "/GameBaseService-test/Tables/BaseTemplatesSeederFunction/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TablesBaseTemplatesSeederFunctionServiceRoleDefaultPolicyDE10D565"
+          }
+        ],
+        "/GameBaseService-test/Tables/BaseTemplatesSeederFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TablesBaseTemplatesSeederFunction47A6BB15"
+          }
+        ],
+        "/GameBaseService-test/Tables/BaseTemplatesSeederProvider/framework-onEvent/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TablesBaseTemplatesSeederProviderframeworkonEventServiceRole42DE612D"
+          }
+        ],
+        "/GameBaseService-test/Tables/BaseTemplatesSeederProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TablesBaseTemplatesSeederProviderframeworkonEventServiceRoleDefaultPolicyD38219AF"
+          }
+        ],
+        "/GameBaseService-test/Tables/BaseTemplatesSeederProvider/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TablesBaseTemplatesSeederProviderframeworkonEvent73DC32D4"
+          }
+        ],
+        "/GameBaseService-test/Tables/BaseTemplatesSeederProvider/framework-onEvent/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TablesBaseTemplatesSeederProviderframeworkonEventLogRetention4CE07262"
+          }
+        ],
+        "/GameBaseService-test/Tables/BaseTemplatesSeederResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TablesBaseTemplatesSeederResourceF1DC8781"
+          }
+        ],
+        "/GameBaseService-test/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/GameBaseService-test/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+          }
+        ],
+        "/GameBaseService-test/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
           }
         ],
         "/GameBaseService-test/Lambdas": [
@@ -313,24 +379,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdasCalculateSpawnLocationFunctionLogRetention0284C28D"
-          }
-        ],
-        "/GameBaseService-test/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
-          }
-        ],
-        "/GameBaseService-test/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
-          }
-        ],
-        "/GameBaseService-test/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
           }
         ],
         "/GameBaseService-test/Apis/ApiAccessLogGroup/Resource": [

@@ -1,5 +1,9 @@
 import * as cdk from 'aws-cdk-lib';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cr from 'aws-cdk-lib/custom-resources';
+import * as path from 'path';
 import { Construct } from 'constructs';
 import { GameBaseServiceConfig } from '../config/environment-config';
 
@@ -45,6 +49,9 @@ export class BaseGameTablesConstruct extends Construct {
 
     // Base Upgrades Table - Base upgrade progression tracking
     this.baseUpgradesTable = this.createBaseUpgradesTable(environment, config);
+
+    // Seed base templates table with initial data
+    this.createBaseTemplatesSeeder(environment, config);
   }
 
   private createPlayerBasesTable(environment: string, config: GameBaseServiceConfig): dynamodb.Table {
@@ -242,5 +249,48 @@ export class BaseGameTablesConstruct extends Construct {
     });
 
     return table;
+  }
+
+  /**
+   * Create custom resource to seed base templates table with initial data
+   */
+  private createBaseTemplatesSeeder(environment: string, config: GameBaseServiceConfig): void {
+    // Create Lambda function for seeding base templates
+    const seedFunction = new lambda.Function(this, 'BaseTemplatesSeederFunction', {
+      functionName: `game-base-seed-templates-${environment}`,
+      runtime: lambda.Runtime.NODEJS_20_X,
+      architecture: lambda.Architecture.X86_64, // Consistent with other Lambda functions
+      handler: 'seed-base-templates.handler',
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../lambda/seed-data')),
+      timeout: cdk.Duration.minutes(5),
+      environment: {
+        BASE_TEMPLATES_TABLE: this.baseTemplatesTable.tableName,
+        NODE_OPTIONS: '--enable-source-maps'
+      }
+    });
+
+    // Grant the Lambda function permissions to read/write the base templates table
+    this.baseTemplatesTable.grantReadWriteData(seedFunction);
+
+    // Create the custom resource
+    const seedProvider = new cr.Provider(this, 'BaseTemplatesSeederProvider', {
+      onEventHandler: seedFunction,
+      logRetention: 30, // 30 days log retention
+      providerFunctionName: `game-base-seed-provider-${environment}`
+    });
+
+    // Create custom resource that triggers the seeding
+    const seedResource = new cdk.CustomResource(this, 'BaseTemplatesSeederResource', {
+      serviceToken: seedProvider.serviceToken,
+      properties: {
+        // Change this value to trigger re-seeding during updates
+        SeedVersion: '1.0.0',
+        Environment: environment,
+        TableName: this.baseTemplatesTable.tableName
+      }
+    });
+
+    // Ensure seeding happens after table is ready
+    seedResource.node.addDependency(this.baseTemplatesTable);
   }
 }
